@@ -177,20 +177,54 @@ public class ScannerTest {
 		checkNext(scanner,KW_A,5,1,2,1);
 		checkNextIsEOF(scanner);
 	}
+	@Test
+	public void testReturnCharacterInInput() throws LexicalException{
+		System.out.println("---testReturnCharacterInInput---");
+		String input="Test\rabc"; //https://ufl.instructure.com/courses/342882/discussion_topics/1532830
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNext(scanner,IDENTIFIER,0,4,1,1);
+		checkNext(scanner,IDENTIFIER,5,3,2,1);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void testSingleCommentLine() throws LexicalException{
+		System.out.println("---testSingleCommentLine---");
+		String input="//testabc";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNextIsEOF(scanner);
+	}
+	
+	@Test
+	public void testEmptyComment() throws LexicalException{
+		System.out.println("---testEmptyComment---");
+		String input="//";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNextIsEOF(scanner);
+	}
 
 	@Test
 	public void testVeryBigIntwithPrecedingCharacters() throws LexicalException {
-		String input="abcd999191991991001001101010101001111111";
-		show(input);
-		thrown.expect(LexicalException.class); 
+		System.out.println("---testVeryBigIntwithPrecedingCharacters---");
+		String input="abcd 999191991991001001101010101001111111";
+		Scanner scanner=new Scanner(input);
+		show(input);		
 		try {
-			new Scanner(input).scan();
+			scanner.scan();
+			
 		} catch (LexicalException e) {  //
 			show(e);
 			//assertEquals(13,e.getPos()); pos inLine will not be checked https://ufl.instructure.com/courses/342882/discussion_topics/1529604 
 			// They will check that an exception is thrown and that the preceding tokens have been created properly.
 			throw e;
 		}
+		checkNext(scanner,IDENTIFIER,0,4,1,1);
+		thrown.expect(LexicalException.class); 
 	}
 	
 
