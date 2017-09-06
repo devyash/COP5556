@@ -16,6 +16,7 @@ package cop5556fa17;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Scanner {
 	
@@ -34,21 +35,36 @@ public class Scanner {
 	}
 
 	public static enum Kind {
-		IDENTIFIER, INTEGER_LITERAL, BOOLEAN_LITERAL, STRING_LITERAL, 
-		KW_x/* x */, KW_X/* X */, KW_y/* y */, KW_Y/* Y */, KW_r/* r */, KW_R/* R */, KW_a/* a */, 
-		KW_A/* A */, KW_Z/* Z */, KW_DEF_X/* DEF_X */, KW_DEF_Y/* DEF_Y */, KW_SCREEN/* SCREEN */, 
-		KW_cart_x/* cart_x */, KW_cart_y/* cart_y */, KW_polar_a/* polar_a */, KW_polar_r/* polar_r */, 
-		KW_abs/* abs */, KW_sin/* sin */, KW_cos/* cos */, KW_atan/* atan */, KW_log/* log */, 
-		KW_image/* image */,  KW_int/* int */, 
-		KW_boolean/* boolean */, KW_url/* url */, KW_file/* file */, OP_ASSIGN/* = */, OP_GT/* > */, OP_LT/* < */, 
-		OP_EXCL/* ! */, OP_Q/* ? */, OP_COLON/* : */, OP_EQ/* == */, OP_NEQ/* != */, OP_GE/* >= */, OP_LE/* <= */, 
-		OP_AND/* & */, OP_OR/* | */, OP_PLUS/* + */, OP_MINUS/* - */, OP_TIMES/* * */, OP_DIV/* / */, OP_MOD/* % */, 
-		OP_POWER/* ** */, OP_AT/* @ */, OP_RARROW/* -> */, OP_LARROW/* <- */, LPAREN/* ( */, RPAREN/* ) */, 
-		LSQUARE/* [ */, RSQUARE/* ] */, SEMI/* ; */, COMMA/* , */, EOF;}
+		IDENTIFIER(""), INTEGER_LITERAL(""), BOOLEAN_LITERAL(""), STRING_LITERAL(""), 
+		KW_x("x")/* x */, KW_X("X")/* X */, KW_y("y")/* y */, KW_Y("Y")/* Y */, KW_r("r")/* r */, KW_R("R")/* R */, KW_a("a")/* a */, 
+		KW_A("A")/* A */, KW_Z("Z")/* Z */, KW_DEF_X("DEF_X")/* DEF_X */, KW_DEF_Y("DEF_Y")/* DEF_Y */, KW_SCREEN("SCREEN")/* SCREEN */, 
+		KW_cart_x("cart_x") /* cart_x */, KW_cart_y("cart_y")/* cart_y */, KW_polar_a("polar_a")/* polar_a */, KW_polar_r("polar_r")/* polar_r */, 
+		KW_abs("abs")/* abs */, KW_sin("sin")/* sin */, KW_cos("cos")/* cos */, KW_atan("atan")/* atan */, KW_log("log")/* log */, 
+		KW_image("image")/* image */,  KW_int("int")/* int */, 
+		KW_boolean("boolean")/* boolean */, KW_url("url")/* url */, KW_file("file")/* file */, OP_ASSIGN("=")/* = */, OP_GT(">")/* > */, OP_LT("<")/* < */, 
+		OP_EXCL("!")/* ! */, OP_Q("?")/* ? */, OP_COLON(":") /* : */, OP_EQ("==")/* == */, OP_NEQ("!=")/* != */, OP_GE("OP_GE")/* >= */, OP_LE("<=")/* <= */, 
+		OP_AND("AND")/* & */, OP_OR("OR")/* | */, OP_PLUS("+")/* + */, OP_MINUS("-")/* - */, OP_TIMES("*")/* * */, OP_DIV("/")/* / */, OP_MOD("%")/* % */, 
+		OP_POWER("**")/* ** */, OP_AT("@")/* @ */, OP_RARROW("->")/* -> */, OP_LARROW("<-")/* <- */, LPAREN("(")/* ( */, RPAREN(")")/* ) */, 
+		LSQUARE("[")/* [ */, RSQUARE("]")/* ] */, SEMI(";")/* ; */, COMMA(",")/* , */, EOF("eof");
+		
+		Kind(String text) {
+				this.text = text;
+			}
+		
+		final String text;
+		
+		String getText() {
+			return text;
+			}
+		
+		}
+	
 	
 	public static enum State{
 		START, IN_DIGIT, IN_IDENT, AFTER_EQ
 	}
+	
+	public HashMap<String,Kind> hm = new HashMap<String,Kind>();
 
 	/** Class to represent Tokens. 
 	 * 
@@ -248,6 +264,37 @@ public class Scanner {
 		this.chars = Arrays.copyOf(inputString.toCharArray(), numChars + 1); // input string terminated with null char
 		chars[numChars] = EOFchar;
 		tokens = new ArrayList<Token>();
+		initializeKeywordHashMap();
+		
+	}
+	
+	public void initializeKeywordHashMap(){
+		hm.put("x",Kind.KW_x);
+		hm.put("X",Kind.KW_X);
+		hm.put("y",Kind.KW_y);
+		hm.put("Y",Kind.KW_Y);
+		hm.put("r",Kind.KW_r);
+		hm.put("R",Kind.KW_R);
+		hm.put("a",Kind.KW_a);
+		hm.put("A",Kind.KW_A);
+		hm.put("Z",Kind.KW_Z);
+		hm.put("DEF_X",Kind.KW_DEF_X);
+		hm.put("DEF_Y",Kind.KW_DEF_Y);
+		hm.put("SCREEN",Kind.KW_SCREEN);
+		hm.put("cart_x",Kind.KW_cart_x);
+		hm.put("cart_y",Kind.KW_cart_y);
+		hm.put("polar_a",Kind.KW_polar_a);
+		hm.put("polar_r",Kind.KW_polar_r);
+		hm.put("abs",Kind.KW_abs);
+		hm.put("sin",Kind.KW_sin);
+		hm.put("cos",Kind.KW_cos);
+		hm.put("atan",Kind.KW_atan);
+		hm.put("log",Kind.KW_log);
+		hm.put("image",Kind.KW_image);
+		hm.put("int",Kind.KW_int);
+		hm.put("boolean",Kind.KW_boolean);
+		hm.put("url",Kind.KW_url);
+		hm.put("file",Kind.KW_file);	
 	}
 
 
@@ -275,24 +322,85 @@ public class Scanner {
 	                startPos = pos;
 	                switch (ch) {
 	                    case '+': {
-	                    		tokens.add(new Token(Kind.OP_PLUS,startPos, 1, line, posInLine));
-	                    		pos++;
+	                    		tokens.add(new Token(Kind.OP_PLUS,startPos, 1, line, posInLine++));
 	                    	} break;
 	                    case '*': {
 	                    				tokens.add(new Token(Kind.OP_TIMES,startPos, 1, line, posInLine));
 	                    				pos++;
 	                    	} break;
 	                    case '=': {
+	                    				System.out.println("In = case");
+	                    				
 	                    				state = State.AFTER_EQ;
-	                    				pos++; 
+	                    				pos++;
+	                    				posInLine++;
+	                    				System.out.println("pos: "+pos);
+	                    				System.out.println("posInLine: "+posInLine);
+	                    				
 	                    	} break;
 	                    case '0': {
 	                    				tokens.add(new Token(Kind.INTEGER_LITERAL,startPos, 1, line, posInLine));
 	                    				pos++;
-	                    	}break;
+	                 	}break;
+	                    	
+//	                    case '&': {
+//	                    				tokens.add(new Token(Kind.AND, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    	
+//	                    case '%': {
+//	                    				tokens.add(new Token(Kind.MOD, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    		       
+//	                    case ',': {
+//	                    				tokens.add(new Token(Kind.COMMA, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    	
+//	                    case '(': {
+//	                    				tokens.add(new Token(Kind.LPAREN, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    	
+//	                    case ')': {
+//	                    				tokens.add(new Token(Kind.RPAREN, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    case '{': {
+//	                    				tokens.add(new Token(Kind.LBRACE, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    case '}': {
+//	                    				tokens.add(new Token(Kind.RBRACE, startPos, 1));
+//	                    				pos++;
+//	                    	} break;
+//	                    case '!': {
+//	                    				state = State.AFTER_NOT;
+//	                    				pos++;
+//	                    	}break;
+//	                    case '<': {
+//	                    				state = State.AFTER_LESSTHAN;
+//	                    				pos++;
+//	                    	}break;
+//	                    case '>': {
+//	                    				state = State.AFTER_GREATERTHAN;
+//	                    				pos++;
+//	                    	}break;
+//	                    case '-': {state = State.AFTER_MINUS;pos++;}break;
+//	                    case '|': {state = State.AFTER_OR; pos++;} break;
+//	                    case '/': {state = State.AFTER_DIV; pos++;} break;
+	                    	
+	                    case ';' :{
+	                    		tokens.add(new Token(Kind.SEMI,startPos, 1, line, posInLine));
+	                    		pos++;
+	                    		posInLine++;
+	                    }
+	                    break;
 	                    case EOFchar : { 
 	                    				 	tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
 	                    					pos++; // next iteration should terminate loop
+	                    					posInLine++;
 	                    					return this;
 	    	            		}  
 	                    default: {
@@ -301,11 +409,22 @@ public class Scanner {
 	                        		pos++;
 	                        		} 
 	                        else if (Character.isJavaIdentifierStart(ch)) {
+	                        		 System.out.println("Start of identifier: "+ch);
 	                             state = State.IN_IDENT;
+	                             posInLine++;
 	                             pos++;
 	                         } 
 	                         else if (Character.isWhitespace(ch)){
-	                        	 	 pos++;
+	                        	 	if(ch=='\n') {
+	                        	 		line++;
+	                        	 		posInLine=1;
+	                        	 	}
+	                        	 	if(ch=='\r' && chars[pos+1]=='\n') {
+	                        	 		line++;
+	                        	 		posInLine=1;
+	                        	 		pos++;
+	                        	 	}
+	                        	 	pos++;
 	                         }
 	                         else { 
 	                     		throw new LexicalException("Undefined Character", pos++);  
@@ -314,15 +433,44 @@ public class Scanner {
 	                    }
 	            }  break;
 	            // case IN_DIGIT: {…}  break;
+//	            TODO: Make this work
+	            // IF character is an identifier loop till it is no longer an identifier
+	            // Then check if it is a keyword
+	            //
 	            case IN_IDENT: {
-	            		if (Character.isJavaIdentifierPart(ch)) {
+	            		if (Character.isJavaIdentifierPart(ch) && pos!=chars.length-1) {
 	            			pos++;
+	            			posInLine++;
 	            		} else {
-	            			tokens.add(new Token(Kind.IDENTIFIER, startPos, pos - startPos,line,posInLine));
+	            			String identifier=String.valueOf(Arrays.copyOfRange(chars, startPos, pos));
+	            			System.out.println("idetifier: "+identifier);
+	            			if(hm.containsKey(identifier)) 
+	            				tokens.add(new Token(hm.get(identifier), startPos, pos - startPos,line,posInLine-(pos - startPos)));     			
+	            			else 
+	            				tokens.add(new Token(Kind.IDENTIFIER, startPos, pos - startPos,line,posInLine-(pos - startPos)));
 	            			state = State.START;
+            				System.out.println("pos: "+pos);
+            				System.out.println("posInLine: "+posInLine);
 	            		}
 	            }  break;
-	            //case AFTER_EQ: {…}  break;
+	            case AFTER_EQ: {	 
+	            		System.out.println("In After EQ");
+	            		System.out.println("ch: "+ch);
+	            		if(ch=='=') 
+	            		{ 
+	            			System.out.println("Before Adding token");
+	            			System.out.println("pos: "+pos);
+	            			System.out.println("posInLine: "+posInLine);
+	            			tokens.add(new Token(Kind.OP_EQ, startPos, 2, line, posInLine-(pos-startPos)));
+	            			pos++;
+	            			posInLine++;
+	            			System.out.println("pos: "+pos);
+	            			System.out.println("posInLine: "+posInLine);
+	            		}else {
+	            			tokens.add(new Token(Kind.OP_ASSIGN, pos, 1, line, posInLine));
+	            		}
+	            		state = State.START;
+	            	}break;
 	            default: // error(….);
 	        }// switch(state)
 	    } // while

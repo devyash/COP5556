@@ -120,6 +120,7 @@ public class ScannerTest {
 	 */
 	@Test
 	public void testSemi() throws LexicalException {
+		System.out.println("testSemi");
 		String input = ";;\n;;";
 		Scanner scanner = new Scanner(input).scan();
 		show(input);
@@ -131,6 +132,68 @@ public class ScannerTest {
 		checkNextIsEOF(scanner);
 	}
 	
+	@Test
+	public void testdoubleEqualto() throws LexicalException {
+		System.out.println("testdoubleEqualto");
+		String input = "a==b";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, KW_a, 0, 1, 1, 1);
+		checkNext(scanner, OP_EQ, 1, 2, 1, 2);
+		checkNext(scanner, IDENTIFIER, 3, 1, 1, 4);
+		checkNextIsEOF(scanner);
+
+	}
+	@Test
+	public void testOnlyKeyword() throws LexicalException{
+		System.out.println("testOnlyKeyword");
+		String input="A";
+		Scanner scanner= new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner,KW_A,0,1,1,1);
+		checkNextIsEOF(scanner);
+	}
+	
+	@Test
+	public void testnewLinewithKeyword() throws LexicalException{
+		System.out.println("---testnewLinewithKeyword----");
+		String input="A\nA";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNext(scanner,KW_A,0,1,1,1);
+		checkNext(scanner,KW_A,2,1,2,1);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void testSpacefollowedByKeyWord() throws LexicalException{
+		System.out.println("testSpacefollowedByKeyWord");
+		String input="    \nA";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNext(scanner,KW_A,5,1,2,1);
+		checkNextIsEOF(scanner);
+	}
+
+	@Test
+	public void testVeryBigIntwithPrecedingCharacters() throws LexicalException {
+		String input="abcd999191991991001001101010101001111111";
+		show(input);
+		thrown.expect(LexicalException.class); 
+		try {
+			new Scanner(input).scan();
+		} catch (LexicalException e) {  //
+			show(e);
+			//assertEquals(13,e.getPos()); pos inLine will not be checked https://ufl.instructure.com/courses/342882/discussion_topics/1529604 
+			// They will check that an exception is thrown and that the preceding tokens have been created properly.
+			throw e;
+		}
+	}
+	
+
 	/**
 	 * This example shows how to test that your scanner is behaving when the
 	 * input is illegal.  In this case, we are giving it a String literal
@@ -163,6 +226,8 @@ public class ScannerTest {
 			throw e;
 		}
 	}
+
+	
 
 
 }
