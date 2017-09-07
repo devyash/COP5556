@@ -188,25 +188,25 @@ public class ScannerTest {
 		checkNext(scanner,IDENTIFIER,5,3,2,1);
 		checkNextIsEOF(scanner);
 	}
-	@Test
-	public void testSingleCommentLine() throws LexicalException{
-		System.out.println("---testSingleCommentLine---");
-		String input="//testabc";
-		show(input);
-		Scanner scanner= new Scanner(input).scan();
-		show(scanner);
-		checkNextIsEOF(scanner);
-	}
+//	@Test
+//	public void testSingleCommentLine() throws LexicalException{
+//		System.out.println("---testSingleCommentLine---");
+//		String input="//testabc";
+//		show(input);
+//		Scanner scanner= new Scanner(input).scan();
+//		show(scanner);
+//		checkNextIsEOF(scanner);
+//	}
 	
-	@Test
-	public void testEmptyComment() throws LexicalException{
-		System.out.println("---testEmptyComment---");
-		String input="//";
-		show(input);
-		Scanner scanner= new Scanner(input).scan();
-		show(scanner);
-		checkNextIsEOF(scanner);
-	}
+//	@Test
+//	public void testEmptyComment() throws LexicalException{
+//		System.out.println("---testEmptyComment---");
+//		String input="//";
+//		show(input);
+//		Scanner scanner= new Scanner(input).scan();
+//		show(scanner);
+//		checkNextIsEOF(scanner);
+//	}
 
 	@Test
 	public void testVeryBigIntwithPrecedingCharacters() throws LexicalException {
@@ -225,6 +225,17 @@ public class ScannerTest {
 		}
 		checkNext(scanner,IDENTIFIER,0,4,1,1);
 		thrown.expect(LexicalException.class); 
+	}
+	@Test
+	public void testBasicIndentifierAndKeyword() throws LexicalException{
+		System.out.println("---testBasicIndentifierAndKeyword---");
+		String input="file fwbcs";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNext(scanner,KW_file,0,4,1,1);
+		checkNext(scanner,IDENTIFIER,5,5,1,6);
+		checkNextIsEOF(scanner);
 	}
 	
 

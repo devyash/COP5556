@@ -372,20 +372,23 @@ public class Scanner {
 	                             pos++;
 	                         } 
 	                         else if (Character.isWhitespace(ch)){
+	                        		pos++;
+	                        	 	posInLine++;
 	                        	 	if(ch=='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
 	                        	 	}
-	                        	 	if(ch=='\r' && (pos+1<=chars.length)?chars[pos+1]=='\n':false) {
+	                        	 	if(ch=='\r' && pos+1<=chars.length && chars[pos+1]=='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
 	                        	 		pos++;
 	                        	 	}
-	                        	 	if(ch=='\r' && (pos+1<=chars.length)?chars[pos+1]!='\n':true) {
+	                        	 	if(ch=='\r' && pos+1<=chars.length && chars[pos+1]!='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
 	                        	 	}
-	                        	 	pos++;
+	                        	 
+	                        	 	
 	                         }
 	                         else { 
 	                     		throw new LexicalException("Undefined Character", pos++);  
@@ -549,25 +552,18 @@ public class Scanner {
             		state = State.START;
             	}break;
 //            	TODO
-            case AFTER_SLASH:{
-        			System.out.println("In After Slash");
-        			System.out.println("ch: "+ch);
-        			if(ch=='/') 
-        			{ 
-        				pos++;
-        				ch=chars[pos];
-        				//Ignore till EOf or /n or /r or /n/r
-        				while(ch < chars.length || ch!='\n' || ch!='\r') {
-                    	 	pos++;
-                    	 	System.out.println("ch: "+ch);
-                    	 	ch=chars[pos];
-        				}     				
-        				
-        			}else {
-        				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
-        			}
-        			state = State.START;
-            }break;
+//            case AFTER_SLASH:{
+//        			System.out.println("In After Slash");
+//        			System.out.println("ch: "+ch);
+//        			System.exit(1);
+//        			if(ch=='/') 
+//        			{ 
+//        				//Ignore till eof or /n or /r or /n/r
+//        			}else {
+//        				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
+//        			}
+//        			pos++;
+//            }break;
 	            default: // error(….);
 	        }// switch(state)
 	    } // while
