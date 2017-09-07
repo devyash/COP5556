@@ -188,25 +188,25 @@ public class ScannerTest {
 		checkNext(scanner,IDENTIFIER,5,3,2,1);
 		checkNextIsEOF(scanner);
 	}
-//	@Test
-//	public void testSingleCommentLine() throws LexicalException{
-//		System.out.println("---testSingleCommentLine---");
-//		String input="//testabc";
-//		show(input);
-//		Scanner scanner= new Scanner(input).scan();
-//		show(scanner);
-//		checkNextIsEOF(scanner);
-//	}
+	@Test
+	public void testSingleCommentLine() throws LexicalException{
+		System.out.println("---testSingleCommentLine---");
+		String input="//testabc";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNextIsEOF(scanner);
+	}
 	
-//	@Test
-//	public void testEmptyComment() throws LexicalException{
-//		System.out.println("---testEmptyComment---");
-//		String input="//";
-//		show(input);
-//		Scanner scanner= new Scanner(input).scan();
-//		show(scanner);
-//		checkNextIsEOF(scanner);
-//	}
+	@Test
+	public void testEmptyComment() throws LexicalException{
+		System.out.println("---testEmptyComment---");
+		String input="//";
+		show(input);
+		Scanner scanner= new Scanner(input).scan();
+		show(scanner);
+		checkNextIsEOF(scanner);
+	}
 
 	@Test
 	public void testVeryBigIntwithPrecedingCharacters() throws LexicalException {
@@ -271,8 +271,225 @@ public class ScannerTest {
 			throw e;
 		}
 	}
+	@Test     
+    public void testCRLFInOneLine() throws LexicalException {
+		System.out.println("testCRLFInOneLine");
+        String input = "cd\r\ncos";         
+        Scanner scanner = new Scanner(input).scan();         
+        show(input);         
+        show(scanner);         
+        checkNext(scanner,IDENTIFIER, 0,2, 1, 1); 
+        checkNext(scanner,KW_cos, 4,3, 2, 1);
+        checkNextIsEOF(scanner);     
+        }
+	@Test
+    public void testSemi1() throws LexicalException {
+        String input = "a==b";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, KW_a, 0, 1, 1, 1);
+        checkNext(scanner, OP_EQ, 1, 2, 1, 2);
+        checkNext(scanner, IDENTIFIER, 3, 1, 1, 4);
+        checkNextIsEOF(scanner);
+    }
+    
+    @Test
+    public void testSemi2() throws LexicalException {
+        String input = "afile afile";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, IDENTIFIER, 0, 5, 1, 1);
+        checkNext(scanner,IDENTIFIER,6,5,1,7);
+        checkNextIsEOF(scanner);
+    }
+    
+  
+    
+    @Test
+    public void testSemi41() throws LexicalException {
+        String input = "file afile";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner,KW_file,0,4,1,1);
+        checkNext(scanner,IDENTIFIER, 5,5, 1, 6);
+        checkNextIsEOF(scanner);
+    }
+    
+    @Test
+    public void testSemi4() throws LexicalException {
+        String input = "atan\natan";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner,KW_atan,0,4,1,1);
+        checkNext(scanner,KW_atan,5,4,2,1);
+        checkNextIsEOF(scanner);
+    }
+    
+    @Test
+    public void testSemiSD1() throws LexicalException {
+        String input = "+hello\natan cart_y";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner,OP_PLUS,0,1,1,1);
+        checkNext(scanner,IDENTIFIER,1,5,1,2);
+        checkNext(scanner,KW_atan,7,4,2,1);
+        checkNext(scanner,KW_cart_y,12,6,2,6);
+        checkNextIsEOF(scanner);
+    }
+    
+    @Test
+    public void testSemiaa() throws LexicalException {
+        String input = "file+afile";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, KW_file, 0, 4, 1, 1);
+        checkNext(scanner, OP_PLUS, 4, 1, 1, 5);
+        checkNext(scanner, IDENTIFIER, 5, 5, 1, 6);
+        checkNextIsEOF(scanner);
+    }
+    
+    @Test
+    public void testSemiSD2() throws LexicalException {
+            String input = "++\n\r\r\n\ncart_y";
+            Scanner scanner = new Scanner(input).scan();
+            show(input);
+            show(scanner);
+            checkNext(scanner,OP_PLUS,0,1,1,1);
+            checkNext(scanner,OP_PLUS,1,1,1,2);
+            checkNext(scanner,KW_cart_y,7,6,5,1);
+            checkNextIsEOF(scanner);
+        }
+    
+    @Test
+       public void testSemi10() throws LexicalException {
+           String input = "atan\n\r\r+ abc";
+           Scanner scanner = new Scanner(input).scan();
+           show(input);
+           show(scanner);
+           checkNext(scanner,KW_atan,0,4,1,1);
+           checkNext(scanner,OP_PLUS,7,1,4,1);
+           checkNext(scanner,IDENTIFIER,9,3,4,3);
+           checkNextIsEOF(scanner);
+       }
+    
+    @Test     
+    public void testSemiSDK() throws LexicalException {         
+        String input = "\n\r\r\natan A";         
+        Scanner scanner = new Scanner(input).scan();    
+        System.out.println("a\nbcd\t\feg\bgh");
+        show(input);         
+        show(scanner);         
+        checkNext(scanner,KW_atan,4,4,4,1);                
+        checkNext(scanner,KW_A,9,1,4,6);         
+        checkNextIsEOF(scanner);     
+        }
+    
+    @Test
+    public void testSemi8() throws LexicalException {
+           String input = "ABC\r\nabc";
+           Scanner scanner = new Scanner(input).scan();
+           show(input);
+           show(scanner);
+           checkNext(scanner,IDENTIFIER, 0,3, 1, 1);
+           checkNext(scanner,IDENTIFIER, 5,3, 2, 1);
+           checkNextIsEOF(scanner);
+       }
+    
+    @Test     
+    public void testSemiSDK1() throws LexicalException {         
+        String input = "==\nabc=abc==";         
+        Scanner scanner = new Scanner(input).scan();    
+        show(input);         
+        show(scanner);         
+        checkNext(scanner,OP_EQ,0,2,1,1);                
+        checkNext(scanner,IDENTIFIER,3,3,2,1); 
+        checkNext(scanner,OP_ASSIGN,6,1,2,4);                
+        checkNext(scanner,IDENTIFIER,7,3,2,5);
+        checkNext(scanner,OP_EQ,10,2,2,8);                
+        checkNextIsEOF(scanner);     
+        }
+    
+    @Test
+    public void testSemi15() throws LexicalException {
+         String input = "AB==";         
+            Scanner scanner = new Scanner(input).scan();    
+            show(input);         
+            show(scanner);                        
+            checkNext(scanner,IDENTIFIER,0,2,1,1); 
+            checkNext(scanner,OP_EQ,2,2,1,3);                
+            checkNextIsEOF(scanner); 
+        }
+    
+    @Test        
+    public void testSemi19() throws LexicalException {                
+        String input = "abc>x";                
+        Scanner scanner = new Scanner(input).scan();            
+        show(input);                
+        show(scanner);                                
+        checkNext(scanner,IDENTIFIER,0,3,1,1);        
+        checkNext(scanner,OP_GT,3,1,1,4);                        
+        checkNext(scanner,KW_x,4,1,1,5);                        
+        checkNextIsEOF(scanner);      
+        }
+    
 
-	
+     @Test        
+     public void testSemi23() throws LexicalException {            
+         String input = "?atan\n\r<->";            
+         Scanner scanner = new Scanner(input).scan();            
+         show(input);            
+         show(scanner);
+         checkNext(scanner,OP_Q,0,1,1,1);
+         checkNext(scanner,KW_atan,1,4,1,2);            
+         checkNext(scanner,OP_LARROW,7,2,3,1);            
+         checkNext(scanner,OP_GT,9,1,3,3);               
+         checkNextIsEOF(scanner);        
+         }
+     
+     @Test        
+     public void testSemikkk() throws LexicalException {            
+         String input = "  ==abc<=\n=><--> A !==! ==";            
+         Scanner scanner = new Scanner(input).scan();            
+         show(input);            
+         show(scanner);
+         checkNext(scanner,OP_EQ,2,2,1,3);
+         checkNext(scanner,IDENTIFIER,4,3,1,5);            
+         checkNext(scanner,OP_LE,7,2,1,8);            
+         checkNext(scanner,OP_ASSIGN,10,1,2,1);     
+         checkNext(scanner,OP_GT,11,1,2,2);
+         checkNext(scanner,OP_LARROW,12,2,2,3);     
+         checkNext(scanner,OP_RARROW,14,2,2,5);
+         checkNext(scanner,KW_A,17,1,2,8);     
+         checkNext(scanner,OP_NEQ,19,2,2,10);
+         checkNext(scanner,OP_ASSIGN,21,1,2,12);
+         checkNext(scanner,OP_EXCL,22,1,2,13);
+         checkNext(scanner,OP_EQ,24,2,2,15);
+         checkNextIsEOF(scanner);        
+         }
+    
+     @Test        
+        public void testSemiSD6() throws LexicalException {                
+            String input = "abc==x?=(sin x)";                
+            Scanner scanner = new Scanner(input).scan();            
+            show(input);                
+            show(scanner);                                 
+            checkNext(scanner,IDENTIFIER,0,3,1,1);        
+            checkNext(scanner,OP_EQ,3,2,1,4);                        
+            checkNext(scanner,KW_x,5,1,1,6);
+            checkNext(scanner,OP_Q,6,1,1,7);
+            checkNext(scanner,OP_ASSIGN,7,1,1,8);
+            checkNext(scanner,LPAREN,8,1,1,9);
+            checkNext(scanner,KW_sin,9,3,1,10);
+            checkNext(scanner,KW_x,13,1,1,14);
+            checkNext(scanner,RPAREN,14,1,1,15);
+            checkNextIsEOF(scanner);            
+            }
 
 
 }

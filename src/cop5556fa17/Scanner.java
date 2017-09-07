@@ -320,6 +320,7 @@ public class Scanner {
 	    int startPos = 0;
 	    System.out.println("Character:"+chars[pos]);
 	    while (pos <= chars.length) {
+	    		System.out.println(chars.length);
 	        char ch = chars[pos];
 	        switch (state) {
 	            case START: {
@@ -354,6 +355,7 @@ public class Scanner {
 	                    
 	                    
 	                    case EOFchar : { 
+	                    					System.out.println("in EOFchar");
 	                    				 	tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
 	                    					pos++; // next iteration should terminate loop
 	                    					posInLine++;
@@ -372,23 +374,28 @@ public class Scanner {
 	                             pos++;
 	                         } 
 	                         else if (Character.isWhitespace(ch)){
-	                        		pos++;
 	                        	 	posInLine++;
+	                        	 	char nextChar=0;
+	                        	 	if(pos+1<=chars.length)
+	                        	 		nextChar=chars[pos+1];
+	       
 	                        	 	if(ch=='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
+	                        	 		System.out.println("line: "+line);
 	                        	 	}
-	                        	 	if(ch=='\r' && pos+1<=chars.length && chars[pos+1]=='\n') {
+	                        	 	if(ch=='\r' && nextChar=='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
 	                        	 		pos++;
 	                        	 	}
-	                        	 	if(ch=='\r' && pos+1<=chars.length && chars[pos+1]!='\n') {
+	                        	 	if(ch=='\r' && nextChar!='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
 	                        	 	}
-	                        	 
-	                        	 	
+	                        		pos++;
+
+	                        		
 	                         }
 	                         else { 
 	                     		throw new LexicalException("Undefined Character", pos++);  
@@ -445,7 +452,7 @@ public class Scanner {
 	            			System.out.println("pos: "+pos);
 	            			System.out.println("posInLine: "+posInLine);
 	            		}else {
-	            			tokens.add(new Token(Kind.OP_ASSIGN, pos, 1, line, posInLine));
+	            			tokens.add(new Token(Kind.OP_ASSIGN, startPos, 1, line, posInLine-(pos - startPos)));
 	            		}
 	            		state = State.START;
 	            	}break;
@@ -464,8 +471,9 @@ public class Scanner {
             				System.out.println("pos: "+pos);
             				System.out.println("posInLine: "+posInLine);
             			}else {
-            				tokens.add(new Token(Kind.OP_GT, pos, 1, line, posInLine));
+            				tokens.add(new Token(Kind.OP_GT, startPos, 1, line, posInLine-(pos - startPos)));
             			}
+            			state = State.START;
 	            }break;
 //            	TODO
             case AFTER_LESS_THAN:{
@@ -493,8 +501,9 @@ public class Scanner {
         				System.out.println("pos: "+pos);
         				System.out.println("posInLine: "+posInLine);
         			}else {
-        				tokens.add(new Token(Kind.OP_LT, pos, 1, line, posInLine));
+        				tokens.add(new Token(Kind.OP_LT, startPos, 1, line, posInLine-(pos - startPos)));
         			}
+        			state = State.START;
             }break;
 //        	TODO
             case AFTER_NOT:{
@@ -511,8 +520,9 @@ public class Scanner {
     				System.out.println("pos: "+pos);
     				System.out.println("posInLine: "+posInLine);
     			}else {
-    				tokens.add(new Token(Kind.OP_EXCL, pos, 1, line, posInLine));
+    				tokens.add(new Token(Kind.OP_EXCL, startPos, 1, line, posInLine-(pos - startPos)));
     			}
+    			state = State.START;
         }break;
 //    	TODO
         case AFTER_MINUS:{
@@ -531,6 +541,7 @@ public class Scanner {
 			}else {
 				tokens.add(new Token(Kind.OP_MINUS, pos, 1, line, posInLine));
 			}
+			state = State.START;
         }break;
 //        TODO
 	    case AFTER_TIMES: {	 
@@ -552,18 +563,23 @@ public class Scanner {
             		state = State.START;
             	}break;
 //            	TODO
-//            case AFTER_SLASH:{
-//        			System.out.println("In After Slash");
-//        			System.out.println("ch: "+ch);
-//        			System.exit(1);
-//        			if(ch=='/') 
-//        			{ 
-//        				//Ignore till eof or /n or /r or /n/r
-//        			}else {
-//        				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
-//        			}
-//        			pos++;
-//            }break;
+            case AFTER_SLASH:{
+        			state=State.START;
+        			if(ch=='/') 
+        			{ 
+        				//Ignore till eof or /n or /r or /n/r
+        				while(ch != EOFchar && ch !='\n' && ch!='\r' && pos<chars.length) {
+        					pos++;
+        					posInLine++;
+        				}
+        				pos--;
+        				pos--;
+        				posInLine--;
+        			}else {
+        				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
+        			}
+        			pos++;
+            }break;
 	            default: // error(….);
 	        }// switch(state)
 	    } // while
