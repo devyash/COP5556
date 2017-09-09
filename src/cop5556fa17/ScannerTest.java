@@ -212,19 +212,18 @@ public class ScannerTest {
 	public void testVeryBigIntwithPrecedingCharacters() throws LexicalException {
 		System.out.println("---testVeryBigIntwithPrecedingCharacters---");
 		String input="abcd 999191991991001001101010101001111111";
-		Scanner scanner=new Scanner(input);
-		show(input);		
-		try {
-			scanner.scan();
-			
-		} catch (LexicalException e) {  //
-			show(e);
 			//assertEquals(13,e.getPos()); pos inLine will not be checked https://ufl.instructure.com/courses/342882/discussion_topics/1529604 
 			// They will check that an exception is thrown and that the preceding tokens have been created properly.
-			throw e;
-		}
-		checkNext(scanner,IDENTIFIER,0,4,1,1);
-		thrown.expect(LexicalException.class); 
+			show(input);
+	        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+	        try {
+	            Scanner scanner = new Scanner(input).scan();
+	            checkNext(scanner, IDENTIFIER, 0, 4, 1, 1);
+	        } catch (LexicalException e) { 
+	            show(e);
+	            assertEquals(41,e.getPos());
+	            throw e;
+	        }
 	}
 	@Test
 	public void testBasicIndentifierAndKeyword() throws LexicalException{
@@ -284,22 +283,30 @@ public class ScannerTest {
         checkNextIsEOF(scanner);     
         }
 
-//	JINAL
-	@Test
-    public void idDigits() throws LexicalException{
-		System.out.println("---idDigits---");
-        String input = "abcd 9999999999999999999000000";
-        show(input);
-        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
-        try {
-            Scanner scanner = new Scanner(input).scan();
-            checkNext(scanner, IDENTIFIER, 0, 4, 1, 1);
-        } catch (LexicalException e) { 
-            show(e);
-            assertEquals(30,e.getPos());
-            throw e;
-        }
-    }
+	
+	@Test     
+	  public void testDiscussion1() throws LexicalException {
+	  //https://ufl.instructure.com/courses/342882/discussion_topics/1527412
+	      String input = "19001=";         
+	      Scanner scanner = new Scanner(input).scan();         
+	      show(input);         
+	      show(scanner);         
+	      checkNext(scanner,INTEGER_LITERAL, 0,5, 1, 1); 
+	      checkNext(scanner,OP_ASSIGN, 5,1, 1, 6);
+	      checkNextIsEOF(scanner);     
+	      }
+	@Test     
+	  public void testDiscussion2() throws LexicalException {
+	  //https://ufl.instructure.com/courses/342882/discussion_topics/1529538
+	      String input = "man\ngirl  AS";         
+	      Scanner scanner = new Scanner(input).scan();         
+	      show(input);         
+	      show(scanner);         
+	      checkNext(scanner,IDENTIFIER, 0,3, 1, 1); 
+	      checkNext(scanner,IDENTIFIER, 4,4, 2, 1);
+	      checkNext(scanner,IDENTIFIER, 10,2, 2, 7);
+	      checkNextIsEOF(scanner);     
+	      }
 	
 
 
