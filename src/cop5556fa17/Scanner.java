@@ -63,7 +63,7 @@ public class Scanner {
 	public static enum State{
 		START, IN_DIGIT, IN_IDENT, AFTER_EQ, AFTER_TIMES, 
 		AFTER_GREATER_THAN, AFTER_LESS_THAN, AFTER_NOT,
-		AFTER_MINUS, AFTER_SLASH
+		AFTER_MINUS, AFTER_SLASH,IN_STRING_LIT
 	}
 	
 	public HashMap<String,Kind> hm = new HashMap<String,Kind>();
@@ -320,7 +320,7 @@ public class Scanner {
 	    int startPos = 0;
 	    System.out.println("Character:"+chars[pos]);
 	    while (pos <= chars.length) {
-	    		System.out.println(chars.length);
+	    		//System.out.println(chars.length);
 	        char ch = chars[pos];
 	        switch (state) {
 	            case START: {
@@ -353,7 +353,12 @@ public class Scanner {
 	                    case ']': { tokens.add(new Token(Kind.RSQUARE,startPos, 1, line, posInLine++)); pos++;	} break;	 
 	                    case ';' :{	tokens.add(new Token(Kind.SEMI,startPos, 1, line, posInLine++)); pos++;}	break;
 	                    
+//	                    String Literal
+	                    case '\"':{ 	state = State.IN_STRING_LIT;	pos++;	posInLine++;		} break;	 	   
 	                    
+//	                    DIGIT 0
+	                    case '0':{ tokens.add(new Token(Kind.INTEGER_LITERAL, startPos, 1, line, posInLine++)); pos++; } break;
+                    
 	                    case EOFchar : { 
 	                    					System.out.println("in EOFchar");
 	                    				 	tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
@@ -405,6 +410,7 @@ public class Scanner {
 	            }  break;
 //	            TODO: 
 	            case IN_DIGIT: {
+	            		System.out.println("In DIGIT");
 	            		if(Character.isDigit(ch)) {
 	            			pos++;
 	            			posInLine++;
@@ -429,10 +435,13 @@ public class Scanner {
 	            		} else {
 	            			String identifier=String.valueOf(Arrays.copyOfRange(chars, startPos, pos));
 	            			System.out.println("identifier: "+identifier);
-	            			if(hm.containsKey(identifier)) 
-	            				tokens.add(new Token(hm.get(identifier), startPos, pos - startPos,line,posInLine-(pos - startPos)));     			
-	            			else 
+	            			if(hm.containsKey(identifier)) {
+	            				tokens.add(new Token(hm.get(identifier), startPos, pos - startPos,line,posInLine-(pos - startPos)));
+	            			}
+	            			else {
+	            				System.out.println("Token Added ");
 	            				tokens.add(new Token(Kind.IDENTIFIER, startPos, pos - startPos,line,posInLine-(pos - startPos)));
+	            			}
 	            			state = State.START;
             				System.out.println("pos: "+pos);
             				System.out.println("posInLine: "+posInLine);
@@ -580,11 +589,40 @@ public class Scanner {
         			}
         			pos++;
             }break;
+//          TODO
+    	    case IN_STRING_LIT: {	 
+                			System.out.println("IN_STRING_LIT");
+                			System.out.println("ch: "+ch);
+                			
+                			while(chars[pos] != '\"' ) {
+                				if(chars[pos] == '\\')
+                				{
+                					char a=chars[pos+1];
+                					if(a=='b' || a=='t' || a=='n' || a=='f' || a=='r' || a=='\'' || a=='\\') {
+                						pos++;
+                						posInLine++;
+                					}
+                					else {
+                						throw new LexicalException("Wrong Escape character", pos-1); 
+                					}
+                						
+                				}
+                				pos++;
+                				posInLine++;
+                				if(chars.length==pos) {
+                					System.out.println(pos-1);
+                					throw new LexicalException("Unclosed \" ", pos-1); 
+                				}
+                			}
+                			tokens.add(new Token(Kind.STRING_LITERAL, startPos,pos-startPos,line, posInLine-(pos-startPos)));
+                		state = State.START;
+                	}break;
 	            default: // error(….);
 	        }// switch(state)
 	    } // while
 		tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
 		return this;
+
 
 	}
 
