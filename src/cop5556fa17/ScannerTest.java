@@ -89,7 +89,6 @@ public class ScannerTest {
 		assertEquals(length, t.length);
 		return t;
 	}
-
 	/**
 	 * Simple test case with a (legal) empty program
 	 *   
@@ -221,7 +220,7 @@ public class ScannerTest {
 	            checkNext(scanner, IDENTIFIER, 0, 4, 1, 1);
 	        } catch (LexicalException e) { 
 	            show(e);
-	            assertEquals(41,e.getPos());
+	            assertEquals(5,e.getPos());
 	            throw e;
 	        }
 	}
@@ -307,7 +306,14 @@ public class ScannerTest {
 	      checkNext(scanner,IDENTIFIER, 10,2, 2, 7);
 	      checkNextIsEOF(scanner);     
 	      }
-	
-
+	@Test
+	  public void testStringLit() throws LexicalException {
+		String input = "\"dsask\'\"";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,STRING_LITERAL, 0, 8, 1, 1);
+	      checkNextIsEOF(scanner);     
+	  }
 
 }

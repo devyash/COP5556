@@ -422,7 +422,7 @@ public class Scanner {
 	            			try {
 		            			Integer.parseInt(digit);
 		            		} catch(NumberFormatException e) {
-		            			throw new LexicalException("Invalid Digit", pos);
+		            			throw new LexicalException("Invalid Digit", startPos);
 		            		}
 	            			state = State.START;
 	            		}
@@ -486,7 +486,8 @@ public class Scanner {
 	            }break;
 //            	TODO
             case AFTER_LESS_THAN:{
-        			System.out.println("In After Less than");
+
+            	System.out.println("In After Less than");
         			System.out.println("ch: "+ch);
         			if(ch=='=') 
         			{ 
@@ -535,6 +536,7 @@ public class Scanner {
         }break;
 //    	TODO
         case AFTER_MINUS:{
+        		state = State.START;
 			System.out.println("In After Greater than");
 			System.out.println("ch: "+ch);
 			if(ch=='>') 
@@ -548,7 +550,7 @@ public class Scanner {
 				System.out.println("pos: "+pos);
 				System.out.println("posInLine: "+posInLine);
 			}else {
-				tokens.add(new Token(Kind.OP_MINUS, pos, 1, line, posInLine));
+				tokens.add(new Token(Kind.OP_MINUS, startPos, 1, line, posInLine-(pos-startPos)));
 			}
 			state = State.START;
         }break;
@@ -558,7 +560,6 @@ public class Scanner {
             			System.out.println("ch: "+ch);
             			if(ch=='*') 
             			{ 
-            				System.out.println("Before Adding token");
             				System.out.println("pos: "+pos);
             				System.out.println("posInLine: "+posInLine);
             				tokens.add(new Token(Kind.OP_POWER, startPos, 2, line, posInLine-(pos-startPos)));
@@ -567,7 +568,7 @@ public class Scanner {
             				System.out.println("pos: "+pos);
             				System.out.println("posInLine: "+posInLine);
             			}else {
-            				tokens.add(new Token(Kind.OP_TIMES, pos, 1, line, posInLine));
+            				tokens.add(new Token(Kind.OP_TIMES, startPos, 1, line, posInLine-(pos-startPos)));
             			}
             		state = State.START;
             	}break;
@@ -580,14 +581,12 @@ public class Scanner {
         				while(ch != EOFchar && ch !='\n' && ch!='\r' && pos<chars.length) {
         					pos++;
         					posInLine++;
+        					ch=chars[pos];
         				}
-        				pos--;
-        				pos--;
-        				posInLine--;
         			}else {
-        				tokens.add(new Token(Kind.OP_DIV, pos, 1, line, posInLine));
+        				tokens.add(new Token(Kind.OP_DIV, startPos, 1, line, posInLine-(pos-startPos)));
+        				
         			}
-        			pos++;
             }break;
 //          TODO
     	    case IN_STRING_LIT: {	 
@@ -595,6 +594,8 @@ public class Scanner {
                 			System.out.println("ch: "+ch);
                 			
                 			while(chars[pos] != '\"' ) {
+                				if(chars[pos]=='\n' || chars[pos]=='\r')
+                					throw new LexicalException("Escape Sequence chars not allowed", pos);
                 				if(chars[pos] == '\\')
                 				{
                 					char a=chars[pos+1];
@@ -603,7 +604,7 @@ public class Scanner {
                 						posInLine++;
                 					}
                 					else {
-                						throw new LexicalException("Wrong Escape character", pos-1); 
+                						throw new LexicalException("Wrong Escape character", pos); 
                 					}
                 						
                 				}
@@ -614,7 +615,10 @@ public class Scanner {
                 					throw new LexicalException("Unclosed \" ", pos-1); 
                 				}
                 			}
+                			pos++;
+                			posInLine++;
                 			tokens.add(new Token(Kind.STRING_LITERAL, startPos,pos-startPos,line, posInLine-(pos-startPos)));
+                			
                 		state = State.START;
                 	}break;
 	            default: // error(….);
