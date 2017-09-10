@@ -318,9 +318,7 @@ public class Scanner {
 		int posInLine = 1;
 	    State state = State.START;
 	    int startPos = 0;
-	    System.out.println("Character:"+chars[pos]);
 	    while (pos <= chars.length) {
-	    		//System.out.println(chars.length);
 	        char ch = chars[pos];
 	        switch (state) {
 	            case START: {
@@ -360,7 +358,6 @@ public class Scanner {
 	                    case '0':{ tokens.add(new Token(Kind.INTEGER_LITERAL, startPos, 1, line, posInLine++)); pos++; } break;
                     
 	                    case EOFchar : { 
-	                    					System.out.println("in EOFchar");
 	                    				 	tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
 	                    					pos++; // next iteration should terminate loop
 	                    					posInLine++;
@@ -373,7 +370,6 @@ public class Scanner {
 		                        posInLine++;
 	                        		} 
 	                        else if (Character.isJavaIdentifierStart(ch)) {
-	                        		 System.out.println("Start of identifier: "+ch);
 	                             state = State.IN_IDENT;
 	                             posInLine++;
 	                             pos++;
@@ -387,7 +383,6 @@ public class Scanner {
 	                        	 	if(ch=='\n') {
 	                        	 		line++;
 	                        	 		posInLine=1;
-	                        	 		System.out.println("line: "+line);
 	                        	 	}
 	                        	 	if(ch=='\r' && nextChar=='\n') {
 	                        	 		line++;
@@ -410,14 +405,12 @@ public class Scanner {
 	            }  break;
 //	            TODO: 
 	            case IN_DIGIT: {
-	            		System.out.println("In DIGIT");
 	            		if(Character.isDigit(ch)) {
 	            			pos++;
 	            			posInLine++;
                 		} 
 	            		else {
 	            			String digit=String.valueOf(Arrays.copyOfRange(chars, startPos, pos));
-	            			System.out.println("Digit: "+digit);
 	            			tokens.add(new Token(Kind.INTEGER_LITERAL, startPos, pos - startPos,line,posInLine-(pos - startPos)));
 	            			try {
 		            			Integer.parseInt(digit);
@@ -434,32 +427,21 @@ public class Scanner {
 	            			posInLine++;
 	            		} else {
 	            			String identifier=String.valueOf(Arrays.copyOfRange(chars, startPos, pos));
-	            			System.out.println("identifier: "+identifier);
 	            			if(hm.containsKey(identifier)) {
 	            				tokens.add(new Token(hm.get(identifier), startPos, pos - startPos,line,posInLine-(pos - startPos)));
 	            			}
 	            			else {
-	            				System.out.println("Token Added ");
 	            				tokens.add(new Token(Kind.IDENTIFIER, startPos, pos - startPos,line,posInLine-(pos - startPos)));
 	            			}
 	            			state = State.START;
-            				System.out.println("pos: "+pos);
-            				System.out.println("posInLine: "+posInLine);
 	            		}
 	            }  break;
 	            case AFTER_EQ: {	 
-	            		System.out.println("In After EQ");
-	            		System.out.println("ch: "+ch);
 	            		if(ch=='=') 
 	            		{ 
-	            			System.out.println("Before Adding token");
-	            			System.out.println("pos: "+pos);
-	            			System.out.println("posInLine: "+posInLine);
 	            			tokens.add(new Token(Kind.OP_EQ, startPos, 2, line, posInLine-(pos-startPos)));
 	            			pos++;
 	            			posInLine++;
-	            			System.out.println("pos: "+pos);
-	            			System.out.println("posInLine: "+posInLine);
 	            		}else {
 	            			tokens.add(new Token(Kind.OP_ASSIGN, startPos, 1, line, posInLine-(pos - startPos)));
 	            		}
@@ -467,18 +449,11 @@ public class Scanner {
 	            	}break;
 //	            	TODO
 	            case AFTER_GREATER_THAN:{
-            			System.out.println("In After Greater than");
-            			System.out.println("ch: "+ch);
             			if(ch=='=') 
             			{ 
-            				System.out.println("Before Adding token");
-            				System.out.println("pos: "+pos);
-            				System.out.println("posInLine: "+posInLine);
             				tokens.add(new Token(Kind.OP_GE, startPos, 2, line, posInLine-(pos-startPos)));
             				pos++;
             				posInLine++;
-            				System.out.println("pos: "+pos);
-            				System.out.println("posInLine: "+posInLine);
             			}else {
             				tokens.add(new Token(Kind.OP_GT, startPos, 1, line, posInLine-(pos - startPos)));
             			}
@@ -486,30 +461,17 @@ public class Scanner {
 	            }break;
 //            	TODO
             case AFTER_LESS_THAN:{
-
-            	System.out.println("In After Less than");
-        			System.out.println("ch: "+ch);
         			if(ch=='=') 
         			{ 
-        				System.out.println("Before Adding token");
-        				System.out.println("pos: "+pos);
-        				System.out.println("posInLine: "+posInLine);
         				tokens.add(new Token(Kind.OP_LE, startPos, 2, line, posInLine-(pos-startPos)));
         				pos++;
         				posInLine++;
-        				System.out.println("pos: "+pos);
-        				System.out.println("posInLine: "+posInLine);
         			}
         			else if(ch=='-') 
         			{ 
-        				System.out.println("Before Adding token");
-        				System.out.println("pos: "+pos);
-        				System.out.println("posInLine: "+posInLine);
         				tokens.add(new Token(Kind.OP_LARROW, startPos, 2, line, posInLine-(pos-startPos)));
         				pos++;
         				posInLine++;
-        				System.out.println("pos: "+pos);
-        				System.out.println("posInLine: "+posInLine);
         			}else {
         				tokens.add(new Token(Kind.OP_LT, startPos, 1, line, posInLine-(pos - startPos)));
         			}
@@ -517,18 +479,11 @@ public class Scanner {
             }break;
 //        	TODO
             case AFTER_NOT:{
-    			System.out.println("In After Not");
-    			System.out.println("ch: "+ch);
     			if(ch=='=') 
     			{ 
-    				System.out.println("Before Adding token");
-    				System.out.println("pos: "+pos);
-    				System.out.println("posInLine: "+posInLine);
     				tokens.add(new Token(Kind.OP_NEQ, startPos, 2, line, posInLine-(pos-startPos)));
     				pos++;
     				posInLine++;
-    				System.out.println("pos: "+pos);
-    				System.out.println("posInLine: "+posInLine);
     			}else {
     				tokens.add(new Token(Kind.OP_EXCL, startPos, 1, line, posInLine-(pos - startPos)));
     			}
@@ -537,18 +492,11 @@ public class Scanner {
 //    	TODO
         case AFTER_MINUS:{
         		state = State.START;
-			System.out.println("In After Greater than");
-			System.out.println("ch: "+ch);
 			if(ch=='>') 
 			{ 
-				System.out.println("Before Adding token");
-				System.out.println("pos: "+pos);
-				System.out.println("posInLine: "+posInLine);
 				tokens.add(new Token(Kind.OP_RARROW, startPos, 2, line, posInLine-(pos-startPos)));
 				pos++;
 				posInLine++;
-				System.out.println("pos: "+pos);
-				System.out.println("posInLine: "+posInLine);
 			}else {
 				tokens.add(new Token(Kind.OP_MINUS, startPos, 1, line, posInLine-(pos-startPos)));
 			}
@@ -556,17 +504,11 @@ public class Scanner {
         }break;
 //        TODO
 	    case AFTER_TIMES: {	 
-            			System.out.println("In After TIMES");
-            			System.out.println("ch: "+ch);
             			if(ch=='*') 
             			{ 
-            				System.out.println("pos: "+pos);
-            				System.out.println("posInLine: "+posInLine);
             				tokens.add(new Token(Kind.OP_POWER, startPos, 2, line, posInLine-(pos-startPos)));
             				pos++;
             				posInLine++;
-            				System.out.println("pos: "+pos);
-            				System.out.println("posInLine: "+posInLine);
             			}else {
             				tokens.add(new Token(Kind.OP_TIMES, startPos, 1, line, posInLine-(pos-startPos)));
             			}
@@ -590,8 +532,6 @@ public class Scanner {
             }break;
 //          TODO
     	    case IN_STRING_LIT: {	 
-                			System.out.println("IN_STRING_LIT");
-                			System.out.println("ch: "+ch);
                 			
                 			while(chars[pos] != '\"' ) {
                 				if(chars[pos]=='\n' || chars[pos]=='\r')
@@ -611,7 +551,6 @@ public class Scanner {
                 				pos++;
                 				posInLine++;
                 				if(chars.length==pos) {
-                					System.out.println(pos-1);
                 					throw new LexicalException("Unclosed \" ", pos-1); 
                 				}
                 			}
