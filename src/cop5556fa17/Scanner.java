@@ -517,7 +517,7 @@ public class Scanner {
 //            	TODO
             case AFTER_SLASH:{
         			state=State.START;
-        			if(ch=='/') 
+        			if(chars[pos]=='/') 
         			{ 
         				//Ignore till eof or /n or /r or /n/r
         				while(ch != EOFchar && ch !='\n' && ch!='\r' && pos<chars.length) {
@@ -534,12 +534,17 @@ public class Scanner {
     	    case IN_STRING_LIT: {	 
                 			
                 			while(chars[pos] != '\"' ) {
-                				if(chars[pos]=='\n' || chars[pos]=='\r')
-                					throw new LexicalException("Escape Sequence chars not allowed", pos);
+                				if(chars[pos]=='\n' || chars[pos]=='\r') {
+                					if(chars[pos]=='\r' && chars[pos+1]=='\n') {
+                						pos++;
+                					}
+                					break;
+                				}
+                					
                 				if(chars[pos] == '\\')
                 				{
                 					char a=chars[pos+1];
-                					if(a=='b' || a=='t' || a=='n' || a=='f' || a=='r' || a=='\'' || a=='\\') {
+                					if(a=='b' || a=='t' || a=='n' || a=='f' || a=='r' || a=='\'' || a=='\\' ||a=='\"') {
                 						pos++;
                 						posInLine++;
                 					}

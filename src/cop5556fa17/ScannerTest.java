@@ -315,5 +315,127 @@ public class ScannerTest {
 	      checkNext(scanner,STRING_LITERAL, 0, 8, 1, 1);
 	      checkNextIsEOF(scanner);     
 	  }
+	@Test
+	  public void testCommentWithCRAndLF() throws LexicalException {
+		String input = "//dsask\r\nasd";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,IDENTIFIER, 9, 3, 2, 1);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	  public void testCommentWithCR() throws LexicalException {
+		String input = "//dsask\rasd 123";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,IDENTIFIER, 8, 3, 2, 1);
+	      checkNext(scanner,INTEGER_LITERAL, 12, 3, 2, 5);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	  public void testCommentWith2LF() throws LexicalException {
+		String input = "//dsask\n\nasd 123";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,IDENTIFIER, 9, 3, 3, 1);
+	      checkNext(scanner,INTEGER_LITERAL, 13, 3, 3, 5);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	  public void testCommentInEndOfLine() throws LexicalException {
+		String input = "asbd//";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,IDENTIFIER, 0, 4, 1, 1);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	  public void testStringLiteralWithMultipleBackSlashes() throws LexicalException {
+		String input = "\"\\\\\"";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,STRING_LITERAL, 0, 4, 1, 1);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	  public void testBackSlashWithDoubleQuotes() throws LexicalException {
+		String input = "\"\\\"\"";
+		Scanner scanner = null;
+		show(input);
+		try {
+		scanner = new Scanner(input).scan();
+		}
+		catch (LexicalException e) { 
+        show(e);
+        show(scanner);
+        throw e;
+		}
+		checkNext(scanner,STRING_LITERAL, 0, 4, 1, 1);
+		checkNextIsEOF(scanner);    
+	  }
+	@Test
+	  public void testAllOperators() throws LexicalException {
+		String input = "+-*/**===><>=<=!=!-><-@|?:";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,OP_PLUS, 0, 1, 1, 1);
+	      checkNext(scanner,OP_MINUS,1,1,1,2);
+	      checkNext(scanner,OP_TIMES,2,1,1,3);
+	      checkNext(scanner,OP_DIV,3,1,1,4);
+	      checkNext(scanner,OP_POWER,4,2,1,5);
+	      checkNext(scanner,OP_EQ,6,2,1,7);
+	      checkNext(scanner,OP_ASSIGN,8,1,1,9);
+	      checkNext(scanner,OP_GT,9,1,1,10);
+	      checkNext(scanner,OP_LT,10,1,1,11);
+	      checkNext(scanner,OP_GE,11,2,1,12);
+	      checkNext(scanner,OP_LE,13,2,1,14);
+	      checkNext(scanner,OP_NEQ,15,2,1,16);
+	      checkNext(scanner,OP_EXCL,17,1,1,18);
+	      checkNext(scanner,OP_RARROW,18,2,1,19);
+	      checkNext(scanner,OP_LARROW,20,2,1,21);
+	      checkNext(scanner,OP_AT,22,1,1,23);
+	      checkNext(scanner,OP_OR,23,1,1,24);
+	      checkNext(scanner,OP_Q,24,1,1,25);
+	      checkNext(scanner,OP_COLON,25,1,1,26);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	public void testAllNewLinesBreaks() throws LexicalException {
+		String input = "abc\nabc\rabc\r\nabc\n\rabc";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	  	  checkNext(scanner,IDENTIFIER, 0, 3, 1, 1);
+	  	  checkNext(scanner,IDENTIFIER, 4, 3, 2, 1);
+	  	  checkNext(scanner,IDENTIFIER, 8, 3, 3, 1);
+	  	  checkNext(scanner,IDENTIFIER, 13, 3, 4, 1);
+	  	  checkNext(scanner,IDENTIFIER, 18, 3, 6, 1);
+	  	  checkNextIsEOF(scanner);     
+	  	  }
+	@Test
+	public void testAllDigitsWith0and1s () throws LexicalException {
+		String input = "0101";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,INTEGER_LITERAL, 0, 1, 1, 1);
+	      checkNext(scanner,INTEGER_LITERAL, 1, 3, 1, 2);
+	      checkNextIsEOF(scanner);     
+	  	  }
+	@Test
+	public void testOnlyBackSpace() throws LexicalException {
+		String input = "\"\b\"";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,STRING_LITERAL, 0, 3, 1, 1); 
+	      checkNextIsEOF(scanner);     
+	  	  }
 
-}
+	}
