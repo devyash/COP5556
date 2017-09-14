@@ -35,30 +35,18 @@ public class Scanner {
 	}
 
 	public static enum Kind {
-		IDENTIFIER(""), INTEGER_LITERAL(""), BOOLEAN_LITERAL("true|false"), STRING_LITERAL(""), 
-		KW_x("x")/* x */, KW_X("X")/* X */, KW_y("y")/* y */, KW_Y("Y")/* Y */, KW_r("r")/* r */, KW_R("R")/* R */, KW_a("a")/* a */, 
-		KW_A("A")/* A */, KW_Z("Z")/* Z */, KW_DEF_X("DEF_X")/* DEF_X */, KW_DEF_Y("DEF_Y")/* DEF_Y */, KW_SCREEN("SCREEN")/* SCREEN */, 
-		KW_cart_x("cart_x") /* cart_x */, KW_cart_y("cart_y")/* cart_y */, KW_polar_a("polar_a")/* polar_a */, KW_polar_r("polar_r")/* polar_r */, 
-		KW_abs("abs")/* abs */, KW_sin("sin")/* sin */, KW_cos("cos")/* cos */, KW_atan("atan")/* atan */, KW_log("log")/* log */, 
-		KW_image("image")/* image */,  KW_int("int")/* int */, 
-		KW_boolean("boolean")/* boolean */, KW_url("url")/* url */, KW_file("file")/* file */, OP_ASSIGN("=")/* = */, OP_GT(">")/* > */, OP_LT("<")/* < */, 
-		OP_EXCL("!")/* ! */, OP_Q("?")/* ? */, OP_COLON(":") /* : */, OP_EQ("==")/* == */, OP_NEQ("!=")/* != */, OP_GE(">=")/* >= */, OP_LE("<=")/* <= */, 
-		OP_AND("AND")/* & */, OP_OR("|")/* | */, OP_PLUS("+")/* + */, OP_MINUS("-")/* - */, OP_TIMES("*")/* * */, OP_DIV("/")/* / */, OP_MOD("%")/* % */, 
-		OP_POWER("**")/* ** */, OP_AT("@")/* @ */, OP_RARROW("->")/* -> */, OP_LARROW("<-")/* <- */, LPAREN("(")/* ( */, RPAREN(")")/* ) */, 
-		LSQUARE("[")/* [ */, RSQUARE("]")/* ] */, SEMI(";")/* ; */, COMMA(",")/* , */, EOF("eof");
-		
-		Kind(String text) {
-				this.text = text;
-			}
-		
-		final String text;
-		
-		String getText() {
-			return text;
-			}
-		
-		}
-	
+        IDENTIFIER, INTEGER_LITERAL, BOOLEAN_LITERAL, STRING_LITERAL, 
+        KW_x/* x */, KW_X/* X */, KW_y/* y */, KW_Y/* Y */, KW_r/* r */, KW_R/* R */, KW_a/* a */, 
+        KW_A/* A */, KW_Z/* Z */, KW_DEF_X/* DEF_X */, KW_DEF_Y/* DEF_Y */, KW_SCREEN/* SCREEN */, 
+        KW_cart_x/* cart_x */, KW_cart_y/* cart_y */, KW_polar_a/* polar_a */, KW_polar_r/* polar_r */, 
+        KW_abs/* abs */, KW_sin/* sin */, KW_cos/* cos */, KW_atan/* atan */, KW_log/* log */, 
+        KW_image/* image */,  KW_int/* int */, 
+        KW_boolean/* boolean */, KW_url/* url */, KW_file/* file */, OP_ASSIGN/* = */, OP_GT/* > */, OP_LT/* < */, 
+        OP_EXCL/* ! */, OP_Q/* ? */, OP_COLON/* : */, OP_EQ/* == */, OP_NEQ/* != */, OP_GE/* >= */, OP_LE/* <= */, 
+        OP_AND/* & */, OP_OR/* | */, OP_PLUS/* + */, OP_MINUS/* - */, OP_TIMES/* * */, OP_DIV/* / */, OP_MOD/* % */, 
+        OP_POWER/* ** */, OP_AT/* @ */, OP_RARROW/* -> */, OP_LARROW/* <- */, LPAREN/* ( */, RPAREN/* ) */, 
+        LSQUARE/* [ */, RSQUARE/* ] */, SEMI/* ; */, COMMA/* , */, EOF;
+    }	
 	
 	public static enum State{
 		START, IN_DIGIT, IN_IDENT, AFTER_EQ, AFTER_TIMES, 
@@ -311,7 +299,6 @@ public class Scanner {
 	 * @return
 	 * @throws LexicalException
 	 */
-//	TODO Implement Scanner
 	public Scanner scan() throws LexicalException {
 	    int pos = 0;
 		int line = 1;
@@ -338,7 +325,7 @@ public class Scanner {
     		                case '+': {	tokens.add(new Token(Kind.OP_PLUS,startPos, 1, line, posInLine++));	pos++;	} break;
 	                    case '-': {	state = State.AFTER_MINUS;	pos++;	posInLine++;		} break;
 	                    case '*': {	state = State.AFTER_TIMES;	pos++;	posInLine++;		} break;
-//	                    TODO Handle Comment
+//	                     Comment
 	                    case '/': { 	state = State.AFTER_SLASH;	pos++;	posInLine++;		} break;
 	 	               	case '%': {	tokens.add(new Token(Kind.OP_MOD,startPos, 1, line, posInLine++));	pos++;} break;
 	 	               	case '@': {	tokens.add(new Token(Kind.OP_AT,startPos, 1, line, posInLine++));	pos++;} break;
@@ -369,7 +356,7 @@ public class Scanner {
 	                        		pos++;
 		                        posInLine++;
 	                        		} 
-	                        else if (Character.isJavaIdentifierStart(ch)) {
+	                        else if (ch=='$'||ch=='_'||(ch>='a' && ch<='z')||(ch>='A'&&ch<='Z')) {
 	                             state = State.IN_IDENT;
 	                             posInLine++;
 	                             pos++;
@@ -403,7 +390,6 @@ public class Scanner {
 	                      }
 	                    }
 	            }  break;
-//	            TODO: 
 	            case IN_DIGIT: {
 	            		if(Character.isDigit(ch)) {
 	            			pos++;
@@ -422,7 +408,7 @@ public class Scanner {
 	            }  break;
 	            case IN_IDENT: {
 	            	
-	            		if (Character.isJavaIdentifierPart(ch) && pos!=chars.length-1) {
+	            		if ((ch=='$'||ch=='_'||(ch>='a' && ch<='z')||(ch>='A'&&ch<='Z')||('0'<=ch&&ch<='9')) && pos!=chars.length-1) {
 	            			pos++;
 	            			posInLine++;
 	            		} else {
@@ -447,7 +433,7 @@ public class Scanner {
 	            		}
 	            		state = State.START;
 	            	}break;
-//	            	TODO
+
 	            case AFTER_GREATER_THAN:{
             			if(ch=='=') 
             			{ 
@@ -459,7 +445,7 @@ public class Scanner {
             			}
             			state = State.START;
 	            }break;
-//            	TODO
+
             case AFTER_LESS_THAN:{
         			if(ch=='=') 
         			{ 
@@ -477,7 +463,7 @@ public class Scanner {
         			}
         			state = State.START;
             }break;
-//        	TODO
+
             case AFTER_NOT:{
     			if(ch=='=') 
     			{ 
@@ -489,7 +475,7 @@ public class Scanner {
     			}
     			state = State.START;
         }break;
-//    	TODO
+
         case AFTER_MINUS:{
         		state = State.START;
 			if(ch=='>') 
@@ -502,7 +488,7 @@ public class Scanner {
 			}
 			state = State.START;
         }break;
-//        TODO
+
 	    case AFTER_TIMES: {	 
             			if(ch=='*') 
             			{ 
@@ -514,7 +500,7 @@ public class Scanner {
             			}
             		state = State.START;
             	}break;
-//            	TODO
+
             case AFTER_SLASH:{
         			state=State.START;
         			if(chars[pos]=='/') 
@@ -530,7 +516,7 @@ public class Scanner {
         				
         			}
             }break;
-//          TODO
+
     	    case IN_STRING_LIT: {	 
                 			
                 			while(chars[pos] != '\"' ) {

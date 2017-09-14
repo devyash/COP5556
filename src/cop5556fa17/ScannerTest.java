@@ -437,5 +437,85 @@ public class ScannerTest {
 	      checkNext(scanner,STRING_LITERAL, 0, 3, 1, 1); 
 	      checkNextIsEOF(scanner);     
 	  	  }
-
-	}
+	@Test
+    public void testIfEscapeCharacterThowException() throws LexicalException {
+        String input = "as\b";
+        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+        try {
+            Scanner scanner = new Scanner(input).scan();
+            checkNext(scanner, IDENTIFIER, 0, 2, 1, 1);
+        } catch (LexicalException e) { 
+            show(e);
+            assertEquals(2,e.getPos());
+            throw e;
+        }
+    }
+	
+	@Test
+	  public void testIfIdentifierWithDigitIsRecognised() throws LexicalException {
+		String input = "abc123";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,IDENTIFIER, 0, 6, 1, 1);
+	      checkNextIsEOF(scanner);     
+	  }
+	@Test
+	  public void testIfFormFeedIsWhiteSpace() throws LexicalException {
+		String input = "abc\f123";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,IDENTIFIER, 0, 3, 1, 1);
+	      checkNext(scanner,INTEGER_LITERAL, 4, 3, 1, 5);
+	      checkNextIsEOF(scanner);     
+	  }
+	public void testAllKeywords() throws LexicalException {
+		String input = "x X y Y r R a A Z DEF_X DEF_Y SCREEN cart_x cart_y polar_a polar_r abs sin cos atan log image int boolean url file";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,KW_x,0,1,1,1);
+	      checkNext(scanner,KW_X,2,1,1,3);
+	      checkNext(scanner,KW_y,4,1,1,5);
+	      checkNext(scanner,KW_Y,6,1,1,7);
+	      checkNext(scanner,KW_r,8,1,1,9);
+	      checkNext(scanner,KW_R,10,1,1,11);
+	      checkNext(scanner,KW_a,12,1,1,13);
+	      checkNext(scanner,KW_A,14,1,1,15);
+	      checkNext(scanner,KW_Z,16,1,1,17);
+	      checkNext(scanner,KW_DEF_X,18,5,1,19);
+	      checkNext(scanner,KW_DEF_Y,24,5,1,25);
+	      checkNext(scanner,KW_SCREEN,30,6,1,31);
+	      checkNext(scanner,KW_cart_x,37,6,1,38);
+	      checkNext(scanner,KW_cart_y,44,6,1,45);
+	      checkNext(scanner,KW_polar_a,51,7,1,52);
+	      checkNext(scanner,KW_polar_r,59,7,1,60);
+	      checkNext(scanner,KW_abs,67,3,1,68);
+	      checkNext(scanner,KW_sin,71,3,1,72);
+	      checkNext(scanner,KW_cos,75,3,1,76);
+	      checkNext(scanner,KW_atan,79,4,1,80);
+	      checkNext(scanner,KW_log,84,3,1,85);
+	      checkNext(scanner,KW_image,88,5,1,89);
+	      checkNext(scanner,KW_int,94,3,1,95);
+	      checkNext(scanner,KW_boolean,98,7,1,99);
+	      checkNext(scanner,KW_url,106,3,1,107);
+	      checkNext(scanner,KW_file,110,4,1,111);
+	      checkNextIsEOF(scanner);     
+	  }
+//    Separators ::=  ( | ) | [ | ] | ; | ,
+	@Test
+	public void testAllSeperatorsLParen() throws LexicalException {
+		String input = "( ) [ ] ; ,";
+	      show(input);
+	      Scanner scanner = new Scanner(input).scan();
+	      show(scanner);
+	      checkNext(scanner,LPAREN,0,1,1,1);
+	      checkNext(scanner,RPAREN,2,1,1,3);
+	      checkNext(scanner,LSQUARE,4,1,1,5);
+	      checkNext(scanner,RSQUARE,6,1,1,7);
+	      checkNext(scanner,SEMI,8,1,1,9);
+	      checkNext(scanner,COMMA,10,1,1,11);
+	      checkNextIsEOF(scanner);     
+	  }
+}
