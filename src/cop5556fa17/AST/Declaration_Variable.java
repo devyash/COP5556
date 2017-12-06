@@ -1,7 +1,6 @@
 package cop5556fa17.AST;
-
-import cop5556fa17.Scanner.Kind;
 import cop5556fa17.Scanner.Token;
+import cop5556fa17.TypeUtils.Type;
 
 
 public class Declaration_Variable extends Declaration {
@@ -9,6 +8,7 @@ public class Declaration_Variable extends Declaration {
 	public final Token type;
 	public final String name;
 	public final Expression e;
+	public Type Type;
 	
 
 	public Declaration_Variable(Token firstToken,  Token type, Token name, Expression e) {

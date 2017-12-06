@@ -155,6 +155,7 @@ public class Scanner {
 			return Integer.valueOf(String.copyValueOf(chars, pos, length));
 		}
 
+
 		public String toString() {
 			return "[" + kind + "," + String.copyValueOf(chars, pos, length)  + "," + pos + "," + length + "," + line + ","
 					+ pos_in_line + "]";
