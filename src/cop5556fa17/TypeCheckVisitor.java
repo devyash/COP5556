@@ -337,8 +337,8 @@ public class TypeCheckVisitor implements ASTVisitor {
     if (lhs.index != null)  lhs.index.visit(this, null);
     if (st.lookup(lhs.name) == null)  throw new SemanticException(lhs.firstToken, "LHS cannot be null!");
     else {
-      lhs.declaration = st.lookup(lhs.name);
-      lhs.Type = st.lookup(lhs.name).Type;
+        lhs.declaration = st.lookup(lhs.name);
+        lhs.Type = st.lookup(lhs.name).Type;
       if (lhs.index != null)
         lhs.isCartesian = lhs.index.isCartesian();
       else

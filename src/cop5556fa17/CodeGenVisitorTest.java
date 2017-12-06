@@ -167,7 +167,7 @@ public class CodeGenVisitorTest {
 		String[] commandLineArgs = {"true", "34", "56"}; //create command line argument array to initialize params, none in this case		
 		runCode(prog, bytecode, commandLineArgs);	
 		show("Log:\n"+RuntimeLog.globalLog);
-		assertEquals("entering main;0;true;1;34;2;56;true;34;34;leaving main;",RuntimeLog.globalLog.toString());
+		assertEquals("entering main;0;true;1;34;2;56;true;34;34;34;leaving main;",RuntimeLog.globalLog.toString()); //34 should be 3 times
 	}
 	
 	
@@ -187,5 +187,513 @@ public class CodeGenVisitorTest {
 		assertEquals("entering main;false;false;false;true;true;leaving main;",RuntimeLog.globalLog.toString());
 										
 	}
+	
+	@Test
+	public void prog7() throws Exception {
+		//scan, parse, and type check the program
+		String prog = "prog7";
+		String input = prog
+				+ "\nint var1;\nvar1 <- @ 0;\nint var2;\nvar2 <- @ 1;\nint output = var1  % var2 + var2;\noutput -> SCREEN;int output2 = var1 - 10 * var2;\noutput2 -> SCREEN;";	
+		show(input);
+		byte[] bytecode = genCode(input);
+		String[] commandLineArgs = {"20", "8"}; //create command line argument array to initialize params, none in this case		
+		runCode(prog, bytecode, commandLineArgs);	
+		show("Log:\n"+RuntimeLog.globalLog);
+	}
+	
+	 @Test
+	    public void prog4bin() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "int chosen;"
+	                + "chosen = g + h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "34", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;34;2;56;25;34;59;59;leaving main;",RuntimeLog.globalLog.toString());
+	    }
 
+
+	    @Test
+	    public void prog4binnotEQ() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g != h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "34", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;34;2;56;25;34;true;true;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+	    @Test
+	    public void prog4binnotEQ1() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " boolean g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "boolean h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g != h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"true", "false", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;true;1;false;2;56;true;false;true;true;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+
+
+	    @Test
+	    public void prog4binnotLT() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g < h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "34", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;34;2;56;25;34;true;true;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+
+
+	    @Test
+	    public void prog4binnotTIMES() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "int chosen;"
+	                + "chosen = g*h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"5", "2", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;5;1;2;2;56;5;2;10;10;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+	    @Test
+	    public void prog4binnotDIV() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "int chosen;"
+	                + "chosen = g/h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"10", "2", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;10;1;2;2;56;10;2;5;5;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+	    @Test
+	    public void prog4binnotMOD() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "int chosen;"
+	                + "chosen = g%h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"10", "2", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;10;1;2;2;56;10;2;0;0;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+	    @Test
+	    public void prog4binnotGT() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g > h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "34", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;34;2;56;25;34;false;false;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+	    @Test
+	    public void prog4binnotGE() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g >= h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "25", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;25;2;56;25;25;true;true;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+	    @Test
+	    public void prog4binheckor() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " boolean g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "boolean h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g | h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"true", "false", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;true;1;false;2;56;true;false;true;true;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+	    @Test
+	    public void prog4binminus() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "int chosen;"
+	                + "chosen = g - h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "34", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;34;2;56;25;34;-9;-9;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+	    @Test
+	    public void prog4bineq() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " int g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "int h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g == h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"25", "34", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;25;1;34;2;56;25;34;false;false;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+	    @Test
+	    public void prog4bineq2() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " boolean g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "boolean h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g == h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"true", "false", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;true;1;false;2;56;true;false;false;false;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+	    @Test
+	    public void prog4bineq3() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " boolean g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "boolean h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g == h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"true", "true", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;true;1;true;2;56;true;true;true;true;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+
+
+	    @Test
+	    public void prog4binwithand() throws Exception {
+	        //scan, parse, and type check the program
+	        String prog = "prog4";
+	        String input = prog
+	                + " boolean g;\n"
+	                + "g <- @ 0;\n"
+	                + "g -> SCREEN;\n"
+	                + "boolean h;\n"
+	                + "h <- @ 1;\n"
+	                + "h -> SCREEN;\n"
+	                + "int k;\n"
+	                + "k <- @ 2;\n"
+	                + "k -> SCREEN;\n"
+	                + "boolean chosen;"
+	                + "chosen = g & h;\n"
+	                + "chosen -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {"true", "false", "56"}; //create command line argument array to initialize params, none in this case
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;0;true;1;false;2;56;true;false;false;false;leaving main;",RuntimeLog.globalLog.toString());
+	    }
+
+
+
+
+
+	    @Test
+	    public void unaryExpr10() throws Exception {
+	        String prog = "unaryExpr";
+	        String input = prog +
+	                "\nboolean g = false;\n" +
+	                "g -> SCREEN;\n"
+	                + "g = !g;\n"
+	                + "g -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {};
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;false;false;false;true;true;leaving main;",RuntimeLog.globalLog.toString());
+
+	    }
+
+
+
+
+	    @Test
+	    public void unaryExpr2() throws Exception {
+	        String prog = "unaryExpr";
+	        String input = prog +
+	                "\nint g = 3;\n" +
+	                "g -> SCREEN;\n"
+	                + "g = -g;\n"
+	                + "g -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {};
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;3;3;3;-3;-3;leaving main;",RuntimeLog.globalLog.toString());
+
+	    }
+
+	    @Test
+	    public void unaryExpr3() throws Exception {
+	        String prog = "unaryExpr";
+	        String input = prog +
+	                "\nint g = 3;\n" +
+	                "g -> SCREEN;\n"
+	                + "g = +g;\n"
+	                + "g -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {};
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;3;3;3;3;3;leaving main;",RuntimeLog.globalLog.toString());
+
+	    }
+
+	    @Test
+	    public void unaryExpr4() throws Exception {
+	        String prog = "unaryExpr";
+	        String input = prog +
+	                "\nint g = 3;\n" +
+	                "g -> SCREEN;\n"
+	                + "g = !g;\n"
+	                + "g -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {};
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;3;3;3;2147483644;2147483644;leaving main;",RuntimeLog.globalLog.toString());
+
+	    }
+
+
+	    @Test
+	    public void unaryExpr5() throws Exception {
+	        String prog = "unaryExpr";
+	        String input = prog +
+	                "\nboolean g = true;\n" +
+	                "g -> SCREEN;\n"
+	                + "g = !g;\n"
+	                + "g -> SCREEN;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {};
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;true;true;true;false;false;leaving main;",RuntimeLog.globalLog.toString());
+
+	    }
+
+	    @Test
+	    public void devyash1() throws Exception {
+	        String prog = "basicprog";
+	        String input = prog +" int n = 2;";
+	        show(input);
+	        byte[] bytecode = genCode(input);
+	        String[] commandLineArgs = {};
+	        runCode(prog, bytecode, commandLineArgs);
+	        show("Log:\n"+RuntimeLog.globalLog);
+	        assertEquals("entering main;2;leaving main;",RuntimeLog.globalLog.toString());
+
+	    }
 }

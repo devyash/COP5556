@@ -5,15 +5,20 @@ package cop5556fa17.AST;
 import java.util.ArrayList;
 
 import cop5556fa17.Scanner.Token;
+import cop5556fa17.TypeUtils.Type;
 
 public class Program extends ASTNode {
-	
+
+  
+	public Type Type;
+
+
 	public final String name;
 	public final ArrayList<ASTNode> decsAndStatements;
-	
 
 
-	
+
+
 	public Program(Token firstToken, Token name, ArrayList<ASTNode> decsAndStatements) {
 		super(firstToken);
 		this.name=name.getText();
@@ -72,4 +77,3 @@ public class Program extends ASTNode {
 
 
 }
-

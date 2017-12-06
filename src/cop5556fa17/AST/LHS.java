@@ -5,12 +5,14 @@ import cop5556fa17.TypeUtils.Type;
 
 public class LHS extends ASTNode{
 
+
+  
+	public Type Type;
+
 	public final String name;
 	public final Index index;
-	public boolean isCartesian;
-	public Type Type;
 	public Declaration declaration;
-	
+	public Boolean isCartesian;
 
 
 
@@ -68,6 +70,6 @@ public class LHS extends ASTNode{
 	}
 
 
-	
-	
+
+
 }
