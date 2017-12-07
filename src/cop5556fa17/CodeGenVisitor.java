@@ -438,42 +438,66 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitExpression_PredefinedName(Expression_PredefinedName expression_PredefinedName, Object arg)
-			throws Exception {
-		// TODO HW6
+			throws Exception {		
+		String t = "";
+		if(expression_PredefinedName.kind==Kind.KW_x) {
+			//mv.visitFieldInsn(GETSTATIC, className, "", desc);
+			t = "x";
+			mv.visitFieldInsn(GETSTATIC, className, t, "I");
+			
+		}
+		else if(expression_PredefinedName.kind==Kind.KW_y) {
+			t = "y";
+			mv.visitFieldInsn(GETSTATIC, className, t, "I");
+			
+		}
 		
-		if(expression_PredefinedName.kind == Kind.KW_DEF_X || expression_PredefinedName.kind == Kind.KW_DEF_Y)
-			mv.visitLdcInsn(256);
-		else if (expression_PredefinedName.kind == Kind.KW_Z) {
-			mv.visitLdcInsn(0xFFFFFF);
-		} else if (expression_PredefinedName.kind == Kind.KW_x) {
-			mv.visitFieldInsn(GETSTATIC, className, "x", "I");
-		} else if (expression_PredefinedName.kind == Kind.KW_y) {
-			mv.visitFieldInsn(GETSTATIC, className, "y", "I");
-		} else if (expression_PredefinedName.kind == Kind.KW_X) {
-			mv.visitFieldInsn(GETSTATIC, className, (String) arg, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getX", ImageSupport.getXSig, false);
-		} else if (expression_PredefinedName.kind == Kind.KW_Y) {
-			mv.visitFieldInsn(GETSTATIC, className, (String) arg, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
-		} else if (expression_PredefinedName.kind == Kind.KW_r) {
+		else if(expression_PredefinedName.kind==Kind.KW_DEF_X) {
+			t = "DEF_X";
+			mv.visitFieldInsn(GETSTATIC, className, t, "I");
+			
+		}
+		else if(expression_PredefinedName.kind==Kind.KW_r) {
+			//t = "r";
 			mv.visitFieldInsn(GETSTATIC, className, "x", "I");
 			mv.visitFieldInsn(GETSTATIC, className, "y", "I");
 			mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_r", RuntimeFunctions.polar_rSig, false);
-		} else if (expression_PredefinedName.kind == Kind.KW_a) {
+		}
+		else if(expression_PredefinedName.kind==Kind.KW_R) {
+			//t = "r";
+			mv.visitFieldInsn(GETSTATIC, className, "X", "I");
+			mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+			mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_r", RuntimeFunctions.polar_rSig, false);
+		}
+		else if (expression_PredefinedName.kind==Kind.KW_A){
+		mv.visitInsn(ICONST_0);
+		mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+		mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_a", RuntimeFunctions.polar_aSig, false);
+		}	
+		else if(expression_PredefinedName.kind==Kind.KW_a) {
 			mv.visitFieldInsn(GETSTATIC, className, "x", "I");
 			mv.visitFieldInsn(GETSTATIC, className, "y", "I");
 			mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_a", RuntimeFunctions.polar_aSig, false);
-		} else if (expression_PredefinedName.kind == Kind.KW_R) {
-			mv.visitFieldInsn(GETSTATIC, className, (String)arg, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getX", ImageSupport.getXSig, false);
-			mv.visitFieldInsn(GETSTATIC, className, (String)arg, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
-			mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_r", RuntimeFunctions.polar_rSig, false);
-		} else if (expression_PredefinedName.kind == Kind.KW_A) {
-			mv.visitInsn(ICONST_0);
-			mv.visitFieldInsn(GETSTATIC, className, (String)arg, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
-			mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, "polar_a", RuntimeFunctions.polar_aSig, false);
+			
+		}
+		
+		else if(expression_PredefinedName.kind==Kind.KW_DEF_Y) {
+			t = "DEF_Y";
+			mv.visitFieldInsn(GETSTATIC, className, t, "I");
+			
+		}
+		else if(expression_PredefinedName.kind==Kind.KW_Z) {
+			t = "Z";
+			mv.visitFieldInsn(GETSTATIC, className, t, "I");
+			
+		}
+		else if(expression_PredefinedName.kind == Kind.KW_X) {
+			mv.visitFieldInsn(GETSTATIC, className, "X", "I" );
+		//	mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getX", ImageSupport.getXSig, false);
+		}
+		else if (expression_PredefinedName.kind == Kind.KW_Y) {
+			mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+		//	mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
 		}
 		
 		return null;
@@ -553,29 +577,33 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
 	public Object visitStatement_Assign(Statement_Assign statement_Assign, Object arg) throws Exception {
 		if(statement_Assign.lhs.Type == Type.IMAGE) {
 			Label l1 = new Label(), l2 = new Label(), l3 = new Label(), l4 = new Label();
+			mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
+			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
+			mv.visitFieldInsn(PUTSTATIC, className,"Y", "I");
+			mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
+			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getX", ImageSupport.getXSig, false);
+			mv.visitFieldInsn(PUTSTATIC, className,"X", "I");
 			mv.visitInsn(ICONST_0);
 			mv.visitInsn(DUP);
 			mv.visitLabel(l1);
-			mv.visitFieldInsn(PUTSTATIC, className, "y", "I");
-			mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
+			mv.visitFieldInsn(PUTSTATIC, className,"y", "I");
+			mv.visitFieldInsn(GETSTATIC, className,"Y", "I");
 			mv.visitJumpInsn(IF_ICMPGE, l4);
 			mv.visitInsn(ICONST_0);
 			mv.visitInsn(DUP);
 			mv.visitLabel(l2);
-			mv.visitFieldInsn(PUTSTATIC, className, "x", "I");
-			mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
-			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getX", ImageSupport.getXSig, false);
+			mv.visitFieldInsn(PUTSTATIC, className,"x", "I");
+			mv.visitFieldInsn(GETSTATIC, className,"X", "I");
 			mv.visitJumpInsn(IF_ICMPGE, l3);
 			statement_Assign.e.visit(this, arg);
 			statement_Assign.lhs.visit(this, arg);
-			mv.visitFieldInsn(GETSTATIC, className, "x", "I");
+			mv.visitFieldInsn(GETSTATIC, className,"x", "I");
 			mv.visitInsn(ICONST_1);
 			mv.visitInsn(IADD);
 			mv.visitInsn(DUP);
 			mv.visitJumpInsn(GOTO, l2);
 			mv.visitLabel(l3);
-			mv.visitFieldInsn(GETSTATIC, className, "y", "I");
+			mv.visitFieldInsn(GETSTATIC, className,"y", "I");
 			mv.visitInsn(ICONST_1);
 			mv.visitInsn(IADD);
 			mv.visitInsn(DUP);
