@@ -10,7 +10,7 @@ public class SymbolTable {
 		hm = new HashMap<>();
 	}
 	
-	public Declaration lookup(String str) {
+	public Declaration search(String str) {
 		if(hm.containsKey(str)) {
 			Object temp = hm.get(str);
 			return (Declaration)temp;

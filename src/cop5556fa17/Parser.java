@@ -690,7 +690,7 @@ Expression orExpression() throws SyntaxException {
 		if(t.kind==Kind.KW_x || t.kind==Kind.COMMA || t.kind==Kind.KW_y ||t.kind==Kind.KW_r ||t.kind==Kind.COMMA ||t.kind==Kind.KW_A) {
 			if(t.kind==Kind.KW_x || t.kind==Kind.COMMA || t.kind==Kind.KW_y)
 				index = xySelector();
-			if(t.kind==Kind.KW_r ||t.kind==Kind.COMMA ||t.kind==Kind.KW_A)
+			if(t.kind==Kind.KW_r ||t.kind==Kind.COMMA ||t.kind==Kind.KW_a)
 				index= raSelector();
 			match(Kind.RSQUARE);
 		}
@@ -722,7 +722,7 @@ Expression orExpression() throws SyntaxException {
 		match(Kind.KW_r);
 		match(Kind.COMMA);
 		e1 = new Expression_PredefinedName(t, t.kind);
-		match(Kind.KW_A);
+		match(Kind.KW_a);
 		return new Index(temp, e0, e1);
 	}
 	

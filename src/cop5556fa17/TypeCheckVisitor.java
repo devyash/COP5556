@@ -72,7 +72,7 @@ public class TypeCheckVisitor implements ASTVisitor {
       Declaration_Variable declaration_Variable, Object arg)
       throws Exception {
     if(declaration_Variable.e != null)  declaration_Variable.e.visit(this, null);
-    if(st.lookup(declaration_Variable.name) == null) {
+    if(st.search(declaration_Variable.name) == null) {
       st.insert(declaration_Variable.name,declaration_Variable); 
       declaration_Variable.Type = TypeUtils.getType(declaration_Variable.type);
     }
@@ -88,9 +88,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     if(expression_Binary.e0 != null)  expression_Binary.e0.visit(this, null);
     if(expression_Binary.e0 != null && expression_Binary.e1 != null && expression_Binary.e0.Type != expression_Binary.e1.Type)
       throw new SemanticException(expression_Binary.firstToken, "REQUIRE: Expression0.Type == Expression1.Type, it was not equal");
-    if(expression_Binary.op == Scanner.Kind.OP_EQ || expression_Binary.op == Scanner.Kind.OP_NEQ)
-      expression_Binary.Type = Type.BOOLEAN;
-    else if((expression_Binary.op == Scanner.Kind.OP_GE || expression_Binary.op == Scanner.Kind.OP_GT || expression_Binary.op == Scanner.Kind.OP_LT || expression_Binary.op == Scanner.Kind.OP_LE) && expression_Binary.e0.Type == Type.INTEGER) 
+    if((expression_Binary.op == Scanner.Kind.OP_EQ || expression_Binary.op == Scanner.Kind.OP_NEQ) ||(expression_Binary.op == Scanner.Kind.OP_GE || expression_Binary.op == Scanner.Kind.OP_GT || expression_Binary.op == Scanner.Kind.OP_LT || expression_Binary.op == Scanner.Kind.OP_LE) && expression_Binary.e0.Type == Type.INTEGER) 
       expression_Binary.Type = Type.BOOLEAN;
     else if((expression_Binary.op == Scanner.Kind.OP_AND || expression_Binary.op == Scanner.Kind.OP_OR) && (expression_Binary.e0.Type == Type.INTEGER || expression_Binary.e0.Type == Type.BOOLEAN )) 
       expression_Binary.Type = expression_Binary.e0.Type;
@@ -139,11 +137,11 @@ public class TypeCheckVisitor implements ASTVisitor {
       Expression_PixelSelector expression_PixelSelector, Object arg)
       throws Exception {
     if(expression_PixelSelector.index != null) expression_PixelSelector.index.visit(this, null);
-    if(st.lookup(expression_PixelSelector.name) == null) 
+    if(st.search(expression_PixelSelector.name) == null) 
       throw new SemanticException(expression_PixelSelector.firstToken, " REQUIRE:  Expression_PixelSelector.Type != null, it was null");
-    if((st.lookup(expression_PixelSelector.name)).Type == Type.IMAGE) expression_PixelSelector.Type = Type.INTEGER;
+    if((st.search(expression_PixelSelector.name)).Type == Type.IMAGE) expression_PixelSelector.Type = Type.INTEGER;
     else if(expression_PixelSelector.index == null) 
-      expression_PixelSelector.Type = st.lookup(expression_PixelSelector.name).Type;
+      expression_PixelSelector.Type = st.search(expression_PixelSelector.name).Type;
     else {
       expression_PixelSelector.Type = null;
       throw new SemanticException(expression_PixelSelector.firstToken, "REQUIRE:  Expression_PixelSelector.Type != null, it was null");
@@ -171,7 +169,7 @@ public class TypeCheckVisitor implements ASTVisitor {
     if (declaration_Image.source != null) declaration_Image.source.visit(this, null);
     if (declaration_Image.xSize != null)  declaration_Image.xSize.visit(this, null);
     if (declaration_Image.ySize != null)  declaration_Image.ySize.visit(this, null);
-    if (st.lookup(declaration_Image.name) == null) {
+    if (st.search(declaration_Image.name) == null) {
       st.insert(declaration_Image.name, declaration_Image);
       declaration_Image.Type = Type.IMAGE;
       if (declaration_Image.xSize != null && !(declaration_Image.ySize != null && declaration_Image.xSize.Type == Type.INTEGER && declaration_Image.ySize.Type == Type.INTEGER))
@@ -209,16 +207,16 @@ public class TypeCheckVisitor implements ASTVisitor {
   @Override
   public Object visitSource_Ident(Source_Ident source_Ident, Object arg)
       throws Exception {
-    if (st.lookup(source_Ident.name) == null) throw new SemanticException(source_Ident.firstToken, "Source_Ident == null, it cannot be null.");
+    if (st.search(source_Ident.name) == null) throw new SemanticException(source_Ident.firstToken, "Source_Ident == null, it cannot be null.");
     else {
-      source_Ident.Type = (st.lookup(source_Ident.name)).Type;
+      source_Ident.Type = (st.search(source_Ident.name)).Type;
       if (!(source_Ident.Type == Type.FILE || source_Ident.Type == Type.URL)) throw new SemanticException(source_Ident.firstToken, "REQUIRE:  Source_Ident.Type == FILE || Source_Ident.Type == URL, it was something else");
     }
     return source_Ident;
   }
 
 //  Declaration_SourceSink  ::= Type name  Source
-//            REQUIRE:  symbolTable.lookupType(name) = Ʇ
+//            REQUIRE:  symbolTable.searchType(name) = Ʇ
 //           symbolTable.insert(name, Declaration_SourceSink)
 //Declaration_SourceSink.Type <= Type
 //           REQUIRE Source.Type == Declaration_SourceSink.Type
@@ -229,8 +227,8 @@ public class TypeCheckVisitor implements ASTVisitor {
       Declaration_SourceSink declaration_SourceSink, Object arg)
       throws Exception {
     if (declaration_SourceSink.source != null) declaration_SourceSink.source.visit(this, null);
-    if (st.lookup(declaration_SourceSink.name) != null) {
-      throw new SemanticException(declaration_SourceSink.firstToken, "  REQUIRE:  symbolTable.lookupType(name) = null, it is already declared");
+    if (st.search(declaration_SourceSink.name) != null) {
+      throw new SemanticException(declaration_SourceSink.firstToken, "  REQUIRE:  symbolTable.searchType(name) = null, it is already declared");
     }
     else {
       st.insert(declaration_SourceSink.name, declaration_SourceSink);
@@ -240,7 +238,7 @@ public class TypeCheckVisitor implements ASTVisitor {
         declaration_SourceSink.Type = Type.URL;
       else 
         throw new SemanticException(declaration_SourceSink.firstToken,"REQUIRE:  Declaration_SourceSink.Type == FILE || Declaration_SourceSink.Type == URL");
-      if (declaration_SourceSink.Type != declaration_SourceSink.source.Type) 
+      if (declaration_SourceSink.Type != declaration_SourceSink.source.Type && declaration_SourceSink.source.Type == null ) 
         throw new SemanticException(declaration_SourceSink.firstToken, "REQUIRE Source.Type == Declaration_SourceSink.Type, it does not match");
     } 
 
@@ -294,9 +292,9 @@ public class TypeCheckVisitor implements ASTVisitor {
   public Object visitStatement_Out(Statement_Out statement_Out, Object arg)
       throws Exception {
     if (statement_Out.sink != null) statement_Out.sink.visit(this, null);
-    if (st.lookup(statement_Out.name) == null) throw new SemanticException(statement_Out.firstToken, "REQUIRE:  (name.Declaration != null), it is null");
-    statement_Out.setDec(st.lookup(statement_Out.name));
-    Declaration d = st.lookup(statement_Out.name);
+    if (st.search(statement_Out.name) == null) throw new SemanticException(statement_Out.firstToken, "REQUIRE:  (name.Declaration != null), it is null");
+    statement_Out.setDec(st.search(statement_Out.name));
+    Declaration d = st.search(statement_Out.name);
     if (!(((d.Type == Type.INTEGER || d.Type == Type.BOOLEAN) && statement_Out.sink.Type == Type.SCREEN) || (d.Type == Type.IMAGE && (statement_Out.sink.Type == Type.FILE || statement_Out.sink.Type == Type.SCREEN)))) {
       throw new SemanticException(statement_Out.firstToken, "REQUIRE:   ((name.Type == INTEGER || name.Type == BOOLEAN) && Sink.Type == SCREEN) ||  (name.Type == IMAGE && (Sink.Type ==FILE || Sink.Type == SCREEN))");
     }
@@ -310,7 +308,7 @@ public class TypeCheckVisitor implements ASTVisitor {
   public Object visitStatement_In(Statement_In statement_In, Object arg)
       throws Exception {
     if (statement_In.source != null)  statement_In.source.visit(this, null);
-    statement_In.setDec(st.lookup(statement_In.name));
+    statement_In.setDec(st.search(statement_In.name));
     return statement_In;
   }
 
@@ -323,11 +321,12 @@ public class TypeCheckVisitor implements ASTVisitor {
     if (statement_Assign.lhs != null) statement_Assign.lhs.visit(this, null);
     if (statement_Assign.e != null) statement_Assign.e.visit(this, null);
     statement_Assign.setCartesian(statement_Assign.lhs.isCartesian);
-    if (statement_Assign.lhs.Type != statement_Assign.e.Type) throw new SemanticException(statement_Assign.firstToken, "REQUIRE:  LHS.Type == Expression.Type");
+    //TODO
+    if (!(statement_Assign.lhs.Type == statement_Assign.e.Type || (statement_Assign.lhs.Type == Type.IMAGE &&statement_Assign.e.Type == Type.INTEGER) )) throw new SemanticException(statement_Assign.firstToken, "REQUIRE:  LHS.Type == Expression.Type");
     return statement_Assign;
   }
   
-//  LHS.Declaration <= symbolTable.lookupDec(name)
+//  LHS.Declaration <= symbolTable.searchDec(name)
 //            LHS.Type <= LHS.Declaration.Type
 //            LHS.isCarteisan <= Index.isCartesian
 
@@ -335,10 +334,10 @@ public class TypeCheckVisitor implements ASTVisitor {
   @Override
   public Object visitLHS(LHS lhs, Object arg) throws Exception {
     if (lhs.index != null)  lhs.index.visit(this, null);
-    if (st.lookup(lhs.name) == null)  throw new SemanticException(lhs.firstToken, "LHS cannot be null!");
+    if (st.search(lhs.name) == null)  throw new SemanticException(lhs.firstToken, "LHS cannot be null!");
     else {
-        lhs.declaration = st.lookup(lhs.name);
-        lhs.Type = st.lookup(lhs.name).Type;
+        lhs.declaration = st.search(lhs.name);
+        lhs.Type = st.search(lhs.name).Type;
       if (lhs.index != null)
         lhs.isCartesian = lhs.index.isCartesian();
       else
@@ -355,15 +354,15 @@ public class TypeCheckVisitor implements ASTVisitor {
   }
 
 //  Sink_Ident ::= name
-//      Sink_Ident.Type <= symbolTable.lookupType(name) 
+//      Sink_Ident.Type <= symbolTable.searchType(name) 
 //                 REQUIRE:  Sink_Ident.Type  == FILE
 
   @Override
   public Object visitSink_Ident(Sink_Ident sink_Ident, Object arg)
       throws Exception {
-    if (st.lookup(sink_Ident.name) == null) throw new SemanticException(sink_Ident.firstToken, "Sink_Ident cannot be null!");
-    else if(st.lookup(sink_Ident.name) != null) {
-      sink_Ident.Type = (st.lookup(sink_Ident.name)).Type;
+    if (st.search(sink_Ident.name) == null) throw new SemanticException(sink_Ident.firstToken, "Sink_Ident cannot be null!");
+    else if(st.search(sink_Ident.name) != null) {
+      sink_Ident.Type = (st.search(sink_Ident.name)).Type;
       if (sink_Ident.Type != Type.FILE)
         throw new SemanticException(sink_Ident.firstToken, "REQUIRE:  Sink_Ident.Type  == FILE, it was not FILE type.");
     }
@@ -382,10 +381,10 @@ public class TypeCheckVisitor implements ASTVisitor {
   @Override
   public Object visitExpression_Ident(Expression_Ident expression_Ident,
       Object arg) throws Exception {
-    if (st.lookup(expression_Ident.name) == null)
+    if (st.search(expression_Ident.name) == null)
       throw new SemanticException(expression_Ident.firstToken, "Expression_Ident cannot be null!");
     else 
-      expression_Ident.Type = (st.lookup(expression_Ident.name)).Type;
+      expression_Ident.Type = (st.search(expression_Ident.name)).Type;
     return expression_Ident;
   }
 }
