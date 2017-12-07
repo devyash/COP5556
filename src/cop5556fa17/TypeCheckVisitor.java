@@ -128,7 +128,10 @@ public class TypeCheckVisitor implements ASTVisitor {
       Expression_PredefinedName pred0 = (Expression_PredefinedName)index.e0;
       Expression_PredefinedName pred1 = (Expression_PredefinedName)index.e1;
       index.setCartesian(!(pred0.kind == Kind.KW_r && pred1.kind == Kind.KW_a));
-    } 
+    }
+    else{
+    		index.setCartesian(true);
+    }
     return index;
   }
 

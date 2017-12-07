@@ -530,4 +530,120 @@ public void image10() throws Exception {
 
 	this.keepFrame();
 }
+
+@Test
+public void mytest1() throws Exception{
+	String prog = "mytest1";
+	String input = prog + 
+			"\nimage[1024,1024] g; \n\nimage[1024,1024] h; \ng <- @ 0;\ng ->SCREEN;\nh[[x,y]] =  g[x,y];\nh -> SCREEN;";
+			;
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	//BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	//BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+	//BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+	//assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
+	keepFrame();	
+}
+
+@Test
+public void test2() throws Exception{
+	String prog = "test2";
+	String input = prog + "\nimage[1024,1024] g; "
+			+ "\n\nimage[1024,1024] h; \ng <- @ 0;\ng -> SCREEN;\nh[[x,y]] = ! g[x,y];"
+			+ "h -> SCREEN; \n";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	//BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	//BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+	//BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+	//assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
+	keepFrame();	
+}
+ @Test
+public void mytest3() throws Exception{
+	String prog = "mytest3";
+	String input = prog + "\nimage[1024,1024] g; \n\nimage[1024,1024] h; "
+			+ "\ng <- @ 0;\ng -> SCREEN;\nh[[x,y]] = ! g[x,y];\nh -> SCREEN; "
+			+ "\n\nimage[1024,1024] average; \naverage[[x,y]] = h[x,y]*3;\n"
+			+ "average -> SCREEN; \n";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	//BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+	BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+	assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
+	keepFrame();
+}
+@Test
+public void mytest4() throws Exception{
+	String prog = "mytest4";
+	String input = prog + "\nimage[1024,1024] g; \n\nimage[1024,1024] h; \ng <- @ 0;\n file f = @ 1; \ng -> SCREEN;\nh[[r,a]] =  g[r,a];h -> SCREEN; \nh -> f;";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1,imageFile2}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	//BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+	BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+	assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
+	keepFrame();
+}
+@Test
+public void mytest5() throws Exception{
+	String prog = "mytest5";
+	String input = prog + "\nimage[1024,1024] g; \n\nimage[1024,1024] h; \ng <- @ 0;\ng -> SCREEN;\nh[[x,y]] =  Z-g[x,y];h -> SCREEN; \n";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	//BufferedImage refImage0 = ImageSupport.readFromFile(imageFile1);
+	BufferedImage loggedImage0 = RuntimeLog.globalImageLog.get(0);
+	BufferedImage loggedImage1 = RuntimeLog.globalImageLog.get(1);
+	assertTrue(ImageSupport.compareImages(loggedImage1, loggedImage0 ));
+	keepFrame();
+}
+@Test
+public void test5() throws Exception{
+	String prog = "test5";
+	String input = prog + "\nimage[1024,1024] g; \n\nimage[1024,1024] h; \ng <- @ 0;\ng -> SCREEN;\nh[[x,y]] =  Z-g[x,y];h -> SCREEN; \n";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);
+}
+@Test
+public void mytest8() throws Exception{
+	String prog = "mytest8";
+	String input = prog + 
+			"\n image g; \n file f = @ 1; \ng <- @ 0;\ng -> SCREEN;\ng -> f;\nimage h;\nh <- f; \nh -> SCREEN;";
+			;
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1,imageFile2}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	keepFrame();	
+	
+}@Test
+public void mytest10() throws Exception{
+	String prog = "mytest10";
+	String input = prog + "\nimage[1024,1024] g; \n\nimage[1024,1024] h; \ng <- @ 0;\ng -> SCREEN;\nh[[x,y]] =  g[x,Y-y];h -> SCREEN; \n";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	keepFrame();
+}
+
+@Test
+public void mytest13() throws Exception{
+	String prog = "mytest3";
+	String input = prog + "\nimage[1024,1024] g; \n\nimage[1024,1024] h; "
+			+ "\ng <- @ 0;\ng -> SCREEN;\nh[[x,y]] = ! g[x,y];\nh -> SCREEN; "
+			+ "\n\nimage[1024,1024] average; \naverage[[x,y]] = h[x,y]*3;\n"
+			+ "average -> SCREEN; \n";
+	byte[] bytecode = genCode(input);		
+	String[] commandLineArgs = {imageFile1}; 
+	runCode(prog, bytecode, commandLineArgs);	
+	keepFrame();
+}
+
 }
