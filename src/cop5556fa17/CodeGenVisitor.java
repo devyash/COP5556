@@ -11,11 +11,9 @@ import org.objectweb.asm.Opcodes;
 import cop5556fa17.TypeUtils.Type;
 import cop5556fa17.AST.ASTNode;
 import cop5556fa17.AST.ASTVisitor;
-import cop5556fa17.AST.Declaration;
 import cop5556fa17.AST.Declaration_Image;
 import cop5556fa17.AST.Declaration_SourceSink;
 import cop5556fa17.AST.Declaration_Variable;
-import cop5556fa17.AST.Expression;
 import cop5556fa17.AST.Expression_Binary;
 import cop5556fa17.AST.Expression_BooleanLit;
 import cop5556fa17.AST.Expression_Conditional;
@@ -92,7 +90,6 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
         Label mainStart = new Label();
         mv.visitLabel(mainStart);
         // if GRADE, generates code to add string to log
-        //		CodeGenUtils.genLog(GRADE, mv, "entering main");
         
         // visit decs and statements to add field to class
         //  and instructions to main method, respectivley
@@ -102,7 +99,6 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
         }
         
         //generates code to add string to log
-        //		CodeGenUtils.genLog(GRADE, mv, "leaving main");
         
         //adds the required (by the JVM) return statement to main
         mv.visitInsn(RETURN);
@@ -284,12 +280,9 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     @Override
     public Object visitExpression_PixelSelector(Expression_PixelSelector expression_PixelSelector, Object arg)
     throws Exception {
-        int code =	GETSTATIC;
-        boolean itf = false;
-        mv.visitFieldInsn(code , className, expression_PixelSelector.name, ImageSupport.ImageDesc);
-        expression_PixelSelector.index.visit(this, arg);
-        code = INVOKESTATIC;        
-        mv.visitMethodInsn(code, ImageSupport.className, "getPixel", ImageSupport.getPixelSig, itf);
+        mv.visitFieldInsn(GETSTATIC , className, expression_PixelSelector.name, ImageSupport.ImageDesc);
+        expression_PixelSelector.index.visit(this, arg);   
+        mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getPixel", ImageSupport.getPixelSig, false);
         return null;
     }
     
@@ -297,30 +290,20 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     public Object visitExpression_Conditional(Expression_Conditional expression_Conditional, Object arg)
     throws Exception {
         expression_Conditional.condition.visit(this,arg);
-        
-        Label first = new Label(), second = new Label();
-        int opcode = IFNE;
-        mv.visitJumpInsn(opcode, first);
-        
+        Label l1 = new Label();
+        Label l2 = new Label();
+        mv.visitJumpInsn(IFNE, l1);
         expression_Conditional.falseExpression.visit(this, arg);
-        
-        opcode = GOTO;
-        mv.visitJumpInsn(opcode, second);
-        
-        mv.visitLabel(first);
-        
+        mv.visitJumpInsn(GOTO, l2);
+        mv.visitLabel(l1);
         expression_Conditional.trueExpression.visit(this, arg);
-        
-        mv.visitLabel(second);
-        
-        //		CodeGenUtils.genLogTOS(GRADE, mv, expression_Conditional.trueExpression.Type);
+        mv.visitLabel(l2);
         return null;
     }
     
     
     @Override
     public Object visitDeclaration_Image(Declaration_Image declaration_Image, Object arg) throws Exception {
-        // TODO HW6
         int access = ACC_STATIC;
         String name = declaration_Image.name;
         String desc = ImageSupport.ImageDesc;
@@ -454,19 +437,13 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     
     @Override
     public Object visitExpression_IntLit(Expression_IntLit expression_IntLit, Object arg) throws Exception {
-        // TODO
-        
         int cst = expression_IntLit.value;
         mv.visitLdcInsn(cst);
-        
-        //		CodeGenUtils.genLogTOS(GRADE, mv, Type.INTEGER);
         return null;
     }
     
     @Override
-    public Object visitExpression_FunctionAppWithExprArg(
-                                                         Expression_FunctionAppWithExprArg expression_FunctionAppWithExprArg, Object arg) throws Exception {
-        
+    public Object visitExpression_FunctionAppWithExprArg(Expression_FunctionAppWithExprArg expression_FunctionAppWithExprArg, Object arg) throws Exception {
         int opcode = INVOKESTATIC;
         String owner = RuntimeFunctions.className ;
         String name = "abs";
@@ -486,35 +463,33 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     }
     
     @Override
-    public Object visitExpression_FunctionAppWithIndexArg(
-                                                          Expression_FunctionAppWithIndexArg expression_FunctionAppWithIndexArg, Object arg) throws Exception {
-        
-        expression_FunctionAppWithIndexArg.arg.e0.visit(this, arg);
-        expression_FunctionAppWithIndexArg.arg.e1.visit(this, arg);
-        
-        int opcode = INVOKESTATIC;
-        String owner = RuntimeFunctions.className ;
-        String name = "cart_x";
-        String desc = RuntimeFunctions.cart_xSig;
-        boolean itf = false;
+    public Object visitExpression_FunctionAppWithIndexArg(Expression_FunctionAppWithIndexArg expression_FunctionAppWithIndexArg, Object arg) throws Exception {
+
+        if(expression_FunctionAppWithIndexArg.arg.e0 != null) expression_FunctionAppWithIndexArg.arg.e0.visit(this, arg);
+        if(expression_FunctionAppWithIndexArg.arg.e1 != null) expression_FunctionAppWithIndexArg.arg.e1.visit(this, arg);
+
+        String name ;
+        String desc ;
         
         if(expression_FunctionAppWithIndexArg.function == Kind.KW_cart_x) {
-            mv.visitMethodInsn(opcode, owner, name, desc, itf);
-        }
-        else if(expression_FunctionAppWithIndexArg.function == Kind.KW_cart_y) {
-            name = "cart_y";
-            desc = RuntimeFunctions.cart_ySig;
-            mv.visitMethodInsn(opcode, owner, name, desc, itf);
+            name = "cart_x";
+            desc = RuntimeFunctions.cart_xSig;
+            mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, name, desc, false);
         }
         else if(expression_FunctionAppWithIndexArg.function == Kind.KW_polar_r) {
             name = "polar_r";
             desc = RuntimeFunctions.polar_rSig;
-            mv.visitMethodInsn(opcode, owner, name, desc, itf);
+            mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, name, desc, false);
         }
-        else{
+        else if(expression_FunctionAppWithIndexArg.function == Kind.KW_cart_y) {
+            name = "cart_y";
+            desc = RuntimeFunctions.cart_ySig;
+            mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, name, desc, false);
+        }
+        else if(expression_FunctionAppWithIndexArg.function == Kind.KW_polar_a) {
             name = "polar_a";
             desc = RuntimeFunctions.polar_aSig;
-            mv.visitMethodInsn(opcode, owner, name, desc, itf);
+            mv.visitMethodInsn(INVOKESTATIC, RuntimeFunctions.className, name, desc, false);
         }
         
         return null;
@@ -522,10 +497,7 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     
     @Override
     public Object visitExpression_PredefinedName(Expression_PredefinedName expression_PredefinedName, Object arg)
-    throws Exception {
-        // TODO HW6
-        
-        
+    throws Exception {      
         int opcode = GETSTATIC;
         String owner = className;
         String name = "DEF_X";
@@ -741,42 +713,6 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     public Object visitStatement_Assign(Statement_Assign statement_Assign, Object arg) throws Exception {
         if(statement_Assign.lhs.Type == Type.IMAGE) {
             Label l1 = new Label(), l2 = new Label(), l3 = new Label(), l4 = new Label();
-            
-            //			mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
-            //			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getY", ImageSupport.getYSig, false);
-            //			mv.visitFieldInsn(PUTSTATIC, className,"Y", "I");
-            //
-            //			mv.visitFieldInsn(GETSTATIC, className, statement_Assign.lhs.name, ImageSupport.ImageDesc);
-            //			mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "getX", ImageSupport.getXSig, false);
-            //			mv.visitFieldInsn(PUTSTATIC, className,"X", "I");
-            //
-            //			mv.visitInsn(ICONST_0);
-            //			mv.visitInsn(DUP);
-            //			mv.visitLabel(l1);
-            //			mv.visitFieldInsn(PUTSTATIC, className,"y", "I");
-            //			mv.visitFieldInsn(GETSTATIC, className,"Y", "I");
-            //			mv.visitJumpInsn(IF_ICMPGE, l4);
-            //			mv.visitInsn(ICONST_0);
-            //			mv.visitInsn(DUP);
-            //			mv.visitLabel(l2);
-            //			mv.visitFieldInsn(PUTSTATIC, className,"x", "I");
-            //			mv.visitFieldInsn(GETSTATIC, className,"X", "I");
-            //			mv.visitJumpInsn(IF_ICMPGE, l3);
-            //			statement_Assign.e.visit(this, arg);
-            //			statement_Assign.lhs.visit(this, arg);
-            //			mv.visitFieldInsn(GETSTATIC, className,"x", "I");
-            //			mv.visitInsn(ICONST_1);
-            //			mv.visitInsn(IADD);
-            //			mv.visitInsn(DUP);
-            //			mv.visitJumpInsn(GOTO, l2);
-            //			mv.visitLabel(l3);
-            //			mv.visitFieldInsn(GETSTATIC, className,"y", "I");
-            //			mv.visitInsn(ICONST_1);
-            //			mv.visitInsn(IADD);
-            //			mv.visitInsn(DUP);
-            //			mv.visitJumpInsn(GOTO, l1);
-            //			mv.visitLabel(l4);
-            
             //Assign Y once outside loop
             int opcode = GETSTATIC;
             String owner = className;
@@ -915,54 +851,25 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
         return null;
     }
     
-    /**
-     * In HW5, only handle INTEGER and BOOLEAN types.
-     */
+
     @Override
     public Object visitLHS(LHS lhs, Object arg) throws Exception {
-        //		if(lhs.index != null) {
-        //			lhs.index.visit(this, arg);
-        //		}
-        int opcode;
-        String owner;
-        String name;
         String desc;
-        boolean itf = false;
         if(lhs.Type == Type.BOOLEAN) {
-            opcode = PUTSTATIC;
-            owner = className;
-            name = lhs.name;
             desc = "Z";
-            mv.visitFieldInsn(opcode, owner, name, desc);
+            mv.visitFieldInsn(PUTSTATIC, className, lhs.name, desc);
         }
         else if(lhs.Type == Type.INTEGER) {
-            opcode = PUTSTATIC;
-            owner = className;
-            name = lhs.name;
             desc = "I";
-            mv.visitFieldInsn(opcode, owner, name, desc);
+            mv.visitFieldInsn(PUTSTATIC, className, lhs.name, desc);
         }
         else if (lhs.Type == Type.IMAGE) {
-            opcode = GETSTATIC;
-            owner = className;
-            name = lhs.name;
-            desc = ImageSupport.ImageDesc;
-            mv.visitFieldInsn(opcode, owner, name, desc);
-            
-            name = "x";
+            mv.visitFieldInsn(GETSTATIC, className, lhs.name, ImageSupport.ImageDesc);
             desc = "I";
-            mv.visitFieldInsn(opcode, owner, name, desc);
-            
-            name = "y";
-            desc = "I";
-            mv.visitFieldInsn(opcode, owner, name, desc);
-            
-            opcode = INVOKESTATIC;
-            owner = ImageSupport.className;
-            name = "setPixel";
+            mv.visitFieldInsn(GETSTATIC, className, "x", desc);
+            mv.visitFieldInsn(GETSTATIC, className, "y", desc);
             desc = ImageSupport.setPixelSig;
-            
-            mv.visitMethodInsn(opcode, owner, name, desc, itf);
+            mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "setPixel", desc, false);
         }
         else
             throw new UnsupportedOperationException();
@@ -973,37 +880,16 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     @Override
     public Object visitSink_SCREEN(Sink_SCREEN sink_SCREEN, Object arg) throws Exception
     {
-        
-        int opcode = INVOKESTATIC;
-        String owner = ImageSupport.className;
-        String name = "makeFrame";
-        String desc = ImageSupport.makeFrameSig;
-        boolean itf = false;
-        
-        mv.visitMethodInsn(opcode, owner, name, desc, itf);
-        
-        opcode = POP;
-        mv.visitInsn(opcode);
+        mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "makeFrame", ImageSupport.makeFrameSig, false);
+        mv.visitInsn(POP);
         return null;
     }
     
     @Override
     public Object visitSink_Ident(Sink_Ident sink_Ident, Object arg) throws Exception 
     {
-        int opcode = GETSTATIC;
-        String owner = className;
-        String name = sink_Ident.name;
-        String desc = "Ljava/lang/String;";
-        boolean itf = false;
-        
-        mv.visitFieldInsn(opcode, owner, name, desc);
-        
-        opcode = INVOKESTATIC;
-        owner = ImageSupport.className;
-        name = "write";
-        desc = ImageSupport.writeSig;
-        mv.visitMethodInsn(opcode, owner, name, desc, itf);
-        
+        mv.visitFieldInsn(GETSTATIC, className, sink_Ident.name, "Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKESTATIC, ImageSupport.className, "write", ImageSupport.writeSig, false);
         return null;
     }
     
@@ -1011,30 +897,23 @@ public class CodeGenVisitor implements ASTVisitor, Opcodes {
     public Object visitExpression_BooleanLit(Expression_BooleanLit expression_BooleanLit, Object arg) throws Exception {
         boolean cst = expression_BooleanLit.value;
         mv.visitLdcInsn(cst);
-        //		CodeGenUtils.genLogTOS(GRADE, mv, Type.BOOLEAN);
         return null;
     }
     
     @Override
     public Object visitExpression_Ident(Expression_Ident expression_Ident,
                                         Object arg) throws Exception {
-        
-        int opcode = GETSTATIC;
-        String owner = className;
-        String name = expression_Ident.name;
-        String desc = "I";
-        boolean itf = false;
-        
-        if(expression_Ident.Type == Type.INTEGER) {
-            mv.visitFieldInsn(opcode, owner, name, desc);
-        }
-        else if(expression_Ident.Type == Type.BOOLEAN) {
+        String desc;
+        if(expression_Ident.Type == Type.BOOLEAN) {
             desc = "Z";
-            mv.visitFieldInsn(opcode, owner, name, desc);
+            mv.visitFieldInsn(GETSTATIC, className, expression_Ident.name, desc);
+        }
+        else if(expression_Ident.Type == Type.INTEGER) {
+        		desc = "I";
+            mv.visitFieldInsn(GETSTATIC, className, expression_Ident.name, "I");
         }
         else
             throw new UnsupportedOperationException();
-        //		CodeGenUtils.genLogTOS(GRADE, mv, expression_Ident.Type);
         return null;
     }
     
